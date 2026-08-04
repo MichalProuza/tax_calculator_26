@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paušální daň, nebo výdajový paušál? · Kalkulačka OSVČ 2026</title>
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style>
+<style>
+/*
+Design plan v3 — Zoner brand paleta (brand.zoner.com/barvy), stejná struktura
+a typografie "papírového formuláře" jako předtím.
+Hlavní: Blue #00BFE8 / Green #80C341 / Sky Blue #E8F9FD.
+Sekundární: Dark Blue #3099BF / Dark Green #6AA744 / Grey #717171 / Black #141414 / White.
+Odvozeno: marker (světlejší modrý tón mezi Sky Blue a Blue) a good-tint
+(pastelová zelená) — v brand paletě nejsou jako hotové tóny, dopočítány stejnou
+logikou jako Sky Blue vůči Blue.
+*/
+:root{
+  --paper:#E8F9FD; --surface:#FFFFFF; --ink:#141414; --ink-soft:#717171;
+  --accent:#00BFE8; --accent-ink:#3099BF; --marker:#CFEFFA;
+  --good:#6AA744; --good-tint:#EAF5DE;
+  --line:#C7CFD3;
+  --hard-shadow:4px 4px 0 rgba(20,20,20,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#141414; --surface:#1E2021; --ink:#F2F5F6; --ink-soft:#A6ADAF;
+    --accent:#00BFE8; --accent-ink:#7FDFF2; --marker:#123642;
+    --good:#93D072; --good-tint:#1E2A16;
+    --line:#3A3F41;
+    --hard-shadow:4px 4px 0 rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141414; --surface:#1E2021; --ink:#F2F5F6; --ink-soft:#A6ADAF;
+  --accent:#00BFE8; --accent-ink:#7FDFF2; --marker:#123642;
+  --good:#93D072; --good-tint:#1E2A16;
+  --line:#3A3F41;
+  --hard-shadow:4px 4px 0 rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{
+  --paper:#E8F9FD; --surface:#FFFFFF; --ink:#141414; --ink-soft:#717171;
+  --accent:#00BFE8; --accent-ink:#3099BF; --marker:#CFEFFA;
+  --good:#6AA744; --good-tint:#EAF5DE;
+  --line:#C7CFD3;
+  --hard-shadow:4px 4px 0 rgba(20,20,20,.18);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font:15.5px/1.6 Georgia,"Times New Roman",serif;
+}
+.mono{font-family:"Courier New",Courier,monospace;font-weight:700}
+.wrap{max-width:1080px;margin:0 auto;padding:34px 20px 64px}
+header.top{margin-bottom:30px;max-width:66ch}
+.eyebrow{
+  font-family:"Courier New",Courier,monospace;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px;
+}
+.eyebrow b{color:var(--accent-ink)}
+h1{
+  font-size:clamp(27px,3.8vw,38px);line-height:1.12;margin:0 0 6px;font-weight:700;
+  text-wrap:balance;letter-spacing:-.01em;
+}
+h1 .u{
+  background:linear-gradient(to top, var(--accent) 0, var(--accent) .14em, transparent .14em);
+  padding-bottom:.06em;
+}
+.lede{color:var(--ink-soft);margin:10px 0 0;font-style:italic}
+.grid{display:grid;grid-template-columns:395px 1fr;gap:26px;align-items:start}
+@media (max-width:880px){.grid{grid-template-columns:1fr}}
+
+.sheet{
+  background:var(--surface);border:1.5px solid var(--ink);
+  border-radius:2px;box-shadow:var(--hard-shadow);
+}
+.sheet h2{
+  font-family:"Courier New",Courier,monospace;font-size:12.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink);margin:0;padding:13px 18px 11px;
+  border-bottom:1.5px solid var(--ink);font-weight:700;
+}
+.sheet h2 .no{color:var(--ink-soft);margin-right:8px}
+.form-body{padding:18px;display:flex;flex-direction:column;gap:20px}
+label.fl{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.hint{font-size:12.5px;color:var(--ink-soft);margin-top:5px;font-style:italic}
+input[type=number]{
+  width:100%;padding:7px 2px;border:none;border-bottom:1.5px dotted var(--line);
+  border-radius:0;background:transparent;color:var(--ink);
+  font-family:"Courier New",Courier,monospace;font-size:16px;font-weight:700;
+}
+input[type=number]::placeholder{font-weight:400;font-style:italic}
+input[type=number]:focus,input[type=range]:focus-visible,button:focus-visible,input[type=checkbox]:focus-visible,input[type=radio]:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;
+}
+input[type=number]:focus{border-bottom-style:solid;border-bottom-color:var(--accent-ink)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
+.range-val{font-family:"Courier New",Courier,monospace;font-weight:700;font-size:21px}
+.range-alt{font-family:"Courier New",Courier,monospace;font-size:12.5px;color:var(--ink-soft);margin:2px 0 6px}
+
+.mode-toggle{display:flex;width:max-content;border:1.5px solid var(--line);margin-bottom:12px}
+.mode-toggle label{
+  position:relative;font-family:"Courier New",Courier,monospace;font-size:12.5px;
+  letter-spacing:.08em;text-transform:uppercase;padding:6px 15px;cursor:pointer;
+  color:var(--ink-soft);
+}
+.mode-toggle label:first-child{border-right:1.5px dotted var(--line)}
+.mode-toggle label:has(input:checked){background:var(--marker);color:var(--ink);font-weight:700}
+.mode-toggle input{position:absolute;opacity:0;pointer-events:none}
+
+.check-line{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
+.check-line input{accent-color:var(--accent-ink);margin-top:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.assump{
+  font-size:12px;color:var(--ink-soft);border-top:1.5px solid var(--ink);
+  padding-top:11px;margin-top:2px;font-style:italic;
+}
+
+/* výsledky */
+.results{display:flex;flex-direction:column;gap:20px}
+.verdict{
+  border:1.5px solid var(--ink);border-radius:2px;background:var(--good-tint);
+  padding:18px 20px;box-shadow:var(--hard-shadow);
+}
+.verdict .v-label{
+  font-family:"Courier New",Courier,monospace;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--good);font-weight:700;
+}
+.verdict .v-main{font-size:22px;font-weight:700;margin:6px 0 4px;text-wrap:balance;line-height:1.28}
+.verdict .v-main mark{
+  background:linear-gradient(100deg, transparent 2%, var(--marker) 6%, var(--marker) 94%, transparent 98%);
+  color:inherit;padding:0 .18em;
+}
+.verdict .v-sub{color:var(--ink-soft);font-size:14px}
+
+#cards{display:flex;flex-direction:column;gap:22px}
+.profile-head{
+  font-family:"Courier New",Courier,monospace;font-size:12.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;padding-bottom:6px;
+  border-bottom:1.5px dotted var(--line);
+}
+.card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:16px}
+.card{
+  background:var(--surface);border:1.5px solid var(--line);border-radius:2px;
+  padding:16px;position:relative;
+}
+.card.best{border:1.5px solid var(--ink);box-shadow:var(--hard-shadow)}
+.card .badge{
+  position:absolute;top:-13px;right:10px;transform:rotate(-5deg);
+  border:2px solid var(--good);color:var(--good);background:var(--surface);
+  font-family:"Courier New",Courier,monospace;font-size:12px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;padding:3px 9px 2px;border-radius:3px;
+}
+.card h3{margin:0 0 2px;font-size:15px}
+.card .sub{font-size:12.5px;color:var(--ink-soft);min-height:3em;font-style:italic}
+.card .total{font-family:"Courier New",Courier,monospace;font-size:21px;font-weight:700;margin:8px 0 1px;white-space:nowrap}
+.card .eff{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px}
+.card table{width:100%;border-collapse:collapse;font-size:13px}
+.card td{padding:4px 0;border-top:1px dotted var(--line)}
+.card td:last-child{text-align:right;font-family:"Courier New",Courier,monospace;font-weight:700;white-space:nowrap}
+.card .net{
+  display:flex;justify-content:space-between;gap:10px;font-size:12.5px;font-weight:700;
+  margin-top:9px;padding-top:9px;border-top:1px dotted var(--line);
+}
+.card .net b{font-family:"Courier New",Courier,monospace;white-space:nowrap;color:var(--good)}
+.card .delta{margin-top:11px;font-size:13px;font-weight:700}
+.card .delta.plus{color:var(--accent-ink)}
+.card .delta.zero{color:var(--good)}
+.card.na .total{color:var(--ink-soft)}
+.na-msg{font-size:13.5px;color:var(--ink-soft);margin-top:8px;font-style:italic}
+
+.lost{padding:16px 18px 18px}
+.lost h2{padding:0 0 10px;border:none}
+.lost ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.lost li{display:flex;justify-content:space-between;gap:14px;font-size:14px;border-bottom:1px dotted var(--line);padding-bottom:8px}
+.lost li:last-child{border-bottom:none;padding-bottom:0}
+.lost .amt{font-family:"Courier New",Courier,monospace;font-weight:700;white-space:nowrap;color:var(--accent-ink)}
+.lost .amt.gain{color:var(--good)}
+
+.notice{
+  border:1.5px solid var(--ink);border-radius:2px;background:var(--marker);
+  padding:14px 18px;font-size:14px;transform:rotate(.4deg);box-shadow:var(--hard-shadow);
+}
+.notice b:first-child{font-family:"Courier New",Courier,monospace;text-transform:uppercase;letter-spacing:.06em;font-size:12.5px}
+
+.export{
+  border:1.5px solid var(--ink);border-radius:2px;padding:20px;
+  background:var(--surface);box-shadow:var(--hard-shadow);
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
+}
+.export .c-txt{max-width:56ch}
+.export h2{margin:0 0 6px;font-size:19px;font-family:Georgia,serif;text-transform:none;letter-spacing:0;border:none;padding:0}
+.export p{margin:0;font-size:13.5px;color:var(--ink-soft)}
+.btn{
+  background:var(--accent);color:#141414;border:1.5px solid #141414;border-radius:2px;
+  padding:12px 22px;font:700 15.5px Georgia,serif;cursor:pointer;white-space:nowrap;
+  box-shadow:3px 3px 0 #141414;
+}
+.btn:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 #141414}
+.btn:active{transform:translate(3px,3px);box-shadow:none}
+.btn.small{padding:8px 16px;font-size:13.5px;box-shadow:2px 2px 0 #141414}
+.btn.small:hover{box-shadow:1px 1px 0 #141414}
+
+.share-box{
+  border:1.5px solid var(--ink);border-radius:2px;padding:20px;
+  background:var(--surface);box-shadow:var(--hard-shadow);
+}
+.share-box h2{margin:0 0 6px;font-size:19px;font-family:Georgia,serif;font-weight:700}
+.share-box p{margin:0 0 14px;font-size:13.5px;color:var(--ink-soft)}
+.share-row{display:flex;gap:10px;margin-bottom:10px}
+.share-row:last-of-type{margin-bottom:0}
+.share-input{
+  flex:1;min-width:0;padding:8px 10px;border:1.5px dotted var(--line);
+  border-radius:2px;background:var(--paper);color:var(--ink);
+  font-family:"Courier New",Courier,monospace;font-size:13px;
+}
+.share-input::placeholder{font-family:Georgia,serif;font-style:italic;color:var(--ink-soft)}
+#shareStatus{margin-top:10px;min-height:1.2em}
+footer{margin-top:36px;font-size:12px;color:var(--ink-soft);line-height:1.75;border-top:1.5px dotted var(--line);padding-top:14px}
+footer a{color:var(--accent-ink)}
+@media (prefers-reduced-motion:reduce){.btn:hover,.btn:active{transform:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Tiskopis č. 1 / prototyp v3 · sezóna <b>2026</b> · po červencové novele</div>
+  <h1>Paušální daň, nebo <span class="u">výdajový paušál</span>?</h1>
+  <p class="lede">Zadejte příjem měsíčně nebo ročně a porovnejte profily 60 % a 40 % zároveň — v obou uvidíte paušální daň i výdajový paušál, včetně slev a odpočtů, o které v paušálním režimu přicházíte.</p>
+</header>
+
+<div class="grid">
+  <!-- ================= FORM ================= -->
+  <section class="sheet" aria-label="Vstupní údaje">
+    <h2><span class="no">odd. A</span>Vaše situace</h2>
+    <div class="form-body">
+      <div>
+        <div class="mode-toggle" role="radiogroup" aria-label="Jednotka příjmu">
+          <label><input type="radio" name="incomeMode" value="year">Ročně</label>
+          <label><input type="radio" name="incomeMode" value="month" checked>Měsíčně</label>
+        </div>
+        <label class="fl" for="income">Příjem z podnikání</label>
+        <div class="range-val" id="incomeVal">10 000 Kč / měsíc</div>
+        <div class="range-alt" id="incomeAlt">= 120 000 Kč / rok</div>
+        <input type="range" id="income" min="10000" max="200000" step="500" value="10000" aria-label="Příjem z podnikání">
+        <div class="hint">Nad 2 mil. Kč ročně paušální daň nelze využít.</div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <label class="fl" for="children">Počet dětí</label>
+          <input type="number" id="children" min="0" max="8" step="1" value="0">
+        </div>
+        <div>
+          <label class="fl" for="realExp">Skutečné výdaje / rok</label>
+          <input type="number" id="realExp" min="0" step="10000" value="" placeholder="volitelné">
+        </div>
+      </div>
+
+      <label class="check-line"><input type="checkbox" id="spouse"><span>Manžel/ka bez vlastních příjmů pečující o dítě do 3 let <span class="hint" style="display:inline">(sleva 24 840 Kč)</span></span></label>
+
+      <div class="two-col">
+        <div>
+          <label class="fl" for="mortgage">Úroky z hypotéky / rok</label>
+          <input type="number" id="mortgage" min="0" step="1000" value="0">
+          <div class="hint">odpočet max. 150 000 Kč</div>
+        </div>
+        <div>
+          <label class="fl" for="pension">Penzijko + DIP / rok</label>
+          <input type="number" id="pension" min="0" step="1000" value="0">
+          <div class="hint">odpočet max. 48 000 Kč</div>
+        </div>
+      </div>
+
+      <div class="assump">Předpoklady prototypu: hlavní činnost po celý rok, neplátce DPH, jediný druh příjmů, bez zaměstnání. Srovnáváme profily 60 % (řemeslné a ostatní živnosti) a 40 % (svobodná povolání, autoři) souběžně — 80% profil lze doplnit stejným způsobem. Parametry roku 2026 po novele účinné zpětně od ledna.</div>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section class="results" aria-live="polite">
+    <div class="verdict" id="verdict"></div>
+    <div id="cards"></div>
+
+    <div class="sheet lost" id="lostPanel">
+      <h2><span class="no">odd. B</span>Co v paušálním režimu ztrácíte a získáváte</h2>
+      <ul id="lostList"></ul>
+    </div>
+
+    <div class="notice" id="julyNotice" hidden>
+      <b>Pozor — červenec 2026:</b> záloha v I. pásmu se novelou zpětně snížila z 9 984 Kč na <b>9 162 Kč</b>. Za leden–červen vám vznikl přeplatek <b>4 932 Kč</b> — červencovou platbu proto stačí poslat ve výši <b>4 230 Kč</b>, jinak o přeplatek žádáte až po konci roku.
+    </div>
+
+    <div class="share-box">
+      <h2>Sdílet tuto částku</h2>
+      <p>Odkaz na artefakt si parametry v URL neponechá, proto se sdílí krátkým kódem — zkopírujte ho a pošlete třeba v chatu. Druhá osoba ho vloží níže a klikne na „Načíst“.</p>
+      <div class="share-row">
+        <input type="text" id="shareCode" class="share-input" readonly aria-label="Sdílecí kód" placeholder="Klikněte na „Vytvořit kód“">
+        <button class="btn small" id="shareBtn">Vytvořit kód</button>
+      </div>
+      <div class="share-row">
+        <input type="text" id="importCode" class="share-input" aria-label="Vložený sdílecí kód" placeholder="Vložte kód, např. R-1200000">
+        <button class="btn small" id="importBtn">Načíst</button>
+      </div>
+      <div class="hint" id="shareStatus"></div>
+    </div>
+
+    <div class="export">
+      <div class="c-txt">
+        <h2>Máte srovnání hotové?</h2>
+        <p>Stáhne se soubor s přehledem všech scénářů, čistého příjmu i toho, o co byste v paušálu přišli. Otevřete ho v prohlížeči — sám nabídne tisk, kde zvolíte „Uložit jako PDF“.</p>
+      </div>
+      <button class="btn" id="printBtn">Stáhnout přehled</button>
+    </div>
+
+    <footer>
+      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: nezohledňuje minimální mzdu pro daňový bonus, vedlejší činnost, souběh se zaměstnáním ani slevy na invaliditu.<br>
+      Parametry 2026: paušální daň 9 162 / 16 745 / 27 139 Kč měs. · min. zálohy 5 005 Kč soc. + 3 306 Kč zdr. · průměrná mzda 48 967 Kč. Zdroje:
+      <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa</a> ·
+      <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR</a> ·
+      <a href="https://www.pruvodcepodnikanim.cz/clanek/minimalni-zalohy-osvc-2026/">ČSOB Průvodce podnikáním</a>
+    </footer>
+  </section>
+</div>
+</div>
+
+<script>
+"use strict";
+/* ---------- parametry 2026 (po novele, zpětně od ledna) ---------- */
+const P = {
+  avgWage: 48967,
+  taxLow: .15, taxHigh: .23,
+  taxThreshold: 36 * 48967,                        // roční hranice 23% sazby
+  slevaPoplatnik: 30840,
+  slevaManzel: 24840,
+  childCredits: [15204, 22320, 27840],              // 1., 2., 3.+ dítě
+  socRate: .292, socShare: .55,
+  socMinYear: 17139 * 12,                           // 35 % prům. mzdy
+  socMaxYear: 48 * 48967,
+  zdrRate: .135, zdrShare: .5,
+  zdrMinYear: 24483.5 * 12,
+  mortgageCap: 150000, pensionCap: 48000,
+  pausal: { 1: 9162, 2: 16745, 3: 27139 }           // měsíční částky pásem
+};
+
+const fmt = n => new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 }).format(Math.round(n)) + " Kč";
+
+function childCreditTotal(n) {
+  let s = 0;
+  for (let i = 0; i < n; i++) s += P.childCredits[Math.min(i, 2)];
+  return s;
+}
+
+/* standardní režim (výdajový paušál nebo skutečné výdaje) */
+function computeStandard(income, expenses, o) {
+  const profit = Math.max(0, income - expenses);
+  let base = Math.max(0, profit - Math.min(o.mortgage, P.mortgageCap) - Math.min(o.pension, P.pensionCap));
+  base = Math.floor(base / 100) * 100;
+  let tax = base <= P.taxThreshold
+    ? base * P.taxLow
+    : P.taxThreshold * P.taxLow + (base - P.taxThreshold) * P.taxHigh;
+  tax = Math.max(0, Math.round(tax) - P.slevaPoplatnik - (o.spouse ? P.slevaManzel : 0));
+  const dan = tax - childCreditTotal(o.children);   // záporná hodnota = daňový bonus
+  const socBase = Math.min(Math.max(profit * P.socShare, P.socMinYear), P.socMaxYear);
+  const soc = Math.ceil(socBase * P.socRate);
+  const zdrBase = Math.max(profit * P.zdrShare, P.zdrMinYear);
+  const zdr = Math.ceil(zdrBase * P.zdrRate);
+  return { dan, soc, zdr, total: dan + soc + zdr };
+}
+
+/* nejnižší dostupné pásmo paušální daně (jediný druh příjmů) */
+function pausalPasmo(income, rate) {
+  if (income > 2000000) return null;
+  if (rate === .8) return 1;
+  if (rate === .6) return income <= 1500000 ? 1 : 2;
+  if (income <= 1000000) return 1;
+  if (income <= 1500000) return 2;
+  return 3;
+}
+
+function pausalItem(rateVal, incomeAnnual) {
+  const pasmo = pausalPasmo(incomeAnnual, rateVal);
+  const name = `Paušální daň · profil ${rateVal * 100} %`;
+  if (!pasmo) return { name, na: true, naMsg: "Nedostupná — příjmy přes 2 mil. Kč (nebo plátce DPH)." };
+  const m = P.pausal[pasmo];
+  return {
+    name,
+    sub: `${["I.", "II.", "III."][pasmo - 1]} pásmo · ${fmt(m)} měsíčně, žádné přiznání ani přehledy`,
+    total: m * 12,
+    table: `<table><tr><td>12 × ${fmt(m)}</td><td>${fmt(m * 12)}</td></tr></table>`,
+    pasmo
+  };
+}
+
+function vpItem(rateVal, incomeAnnual, o) {
+  const capExpenses = Math.min(incomeAnnual * rateVal, 2000000 * rateVal);
+  const r = computeStandard(incomeAnnual, capExpenses, o);
+  return { name: `Výdajový paušál ${rateVal * 100} %`, sub: "daňové přiznání + přehledy, uplatníte slevy i odpočty", total: r.total, table: rowTable(r) };
+}
+
+function rowTable(r) {
+  const danLabel = r.dan < 0 ? "Daňový bonus" : "Daň z příjmů";
+  return `<table>
+    <tr><td>${danLabel}</td><td>${fmt(r.dan)}</td></tr>
+    <tr><td>Sociální poj.</td><td>${fmt(r.soc)}</td></tr>
+    <tr><td>Zdravotní poj.</td><td>${fmt(r.zdr)}</td></tr>
+  </table>`;
+}
+
+const $ = id => document.getElementById(id);
+const inputs = ["income", "children", "realExp", "spouse", "mortgage", "pension"];
+
+/* ---------- přepínač ročně / měsíčně ---------- */
+const MODE_CFG = { year: { min: 120000, max: 2400000, step: 10000 }, month: { min: 10000, max: 200000, step: 500 } };
+let incomeMode = "month";
+
+function setMode(mode) {
+  if (mode === incomeMode) return;
+  const prevAnnual = incomeMode === "year" ? +$("income").value : (+$("income").value) * 12;
+  incomeMode = mode;
+  const cfg = MODE_CFG[mode];
+  const slider = $("income");
+  slider.min = cfg.min; slider.max = cfg.max; slider.step = cfg.step;
+  let next = mode === "year" ? prevAnnual : prevAnnual / 12;
+  next = Math.round(next / cfg.step) * cfg.step;
+  next = Math.min(cfg.max, Math.max(cfg.min, next));
+  slider.value = next;
+  render();
+}
+
+/* sdílení částky — kódem (M-100000 / R-1200000), protože URL parametry
+   se v hostingu artefaktu neuchovají */
+function applyIncome(mode, castka) {
+  if (!isFinite(castka) || castka <= 0) return false;
+  incomeMode = mode;
+  document.querySelectorAll('input[name="incomeMode"]').forEach(r => { r.checked = r.value === incomeMode; });
+  const cfg = MODE_CFG[incomeMode];
+  const slider = $("income");
+  slider.min = cfg.min; slider.max = cfg.max; slider.step = cfg.step;
+  let v = Math.round(castka / cfg.step) * cfg.step;
+  slider.value = Math.min(cfg.max, Math.max(cfg.min, v));
+  return true;
+}
+
+function parseShareCode(str) {
+  const m = /^([MR])-(\d+)$/i.exec(String(str || "").trim());
+  if (!m) return null;
+  return { mode: m[1].toUpperCase() === "M" ? "month" : "year", castka: +m[2] };
+}
+
+/* nepovinný bonus: kdyby hosting artefaktu přece jen jednou URL parametry
+   propustil (?obdobi=rok|mesic&castka=1200000) */
+function applyIncomeFromParams() {
+  const params = new URLSearchParams(location.search);
+  if (!params.has("castka")) return;
+  applyIncome(params.get("obdobi") === "mesic" ? "month" : "year", +params.get("castka"));
+}
+
+function readOpts() {
+  return {
+    children: Math.max(0, Math.min(8, +$("children").value || 0)),
+    spouse: $("spouse").checked,
+    mortgage: +$("mortgage").value || 0,
+    pension: +$("pension").value || 0,
+    realExp: $("realExp").value === "" ? null : Math.max(0, +$("realExp").value)
+  };
+}
+
+function cardHTML(item, best, incomeAnnual) {
+  if (item.na) return `<div class="card na"><h3>${item.name}</h3><div class="total">—</div><div class="na-msg">${item.naMsg}</div></div>`;
+  const isBest = item === best;
+  const d = item.total - best.total;
+  return `<div class="card${isBest ? " best" : ""}">
+    ${isBest ? '<div class="badge">Vítěz</div>' : ""}
+    <h3>${item.name}</h3><div class="sub">${item.sub}</div>
+    <div class="total">${fmt(item.total)}</div>
+    <div class="eff">${(item.total / incomeAnnual * 100).toFixed(1).replace(".", ",")} % z příjmů · rok</div>
+    ${item.table}
+    <div class="net"><span>Čistý příjem po odvodech</span><b>${fmt(incomeAnnual - item.total)}</b></div>
+    <div class="delta ${isBest ? "zero" : "plus"}">${isBest ? "nejnižší odvody" : "+" + fmt(d) + " ročně navíc"}</div>
+  </div>`;
+}
+
+function computeAll() {
+  const raw = +$("income").value;
+  const incomeAnnual = incomeMode === "year" ? raw : raw * 12;
+  const o = readOpts();
+
+  const profiles = [
+    { title: "60 % — řemeslné a ostatní živnosti", rateVal: .6, pausal: pausalItem(.6, incomeAnnual), vp: vpItem(.6, incomeAnnual, o) },
+    { title: "40 % — svobodná povolání, autoři", rateVal: .4, pausal: pausalItem(.4, incomeAnnual), vp: vpItem(.4, incomeAnnual, o) }
+  ];
+  let realItem = null;
+  if (o.realExp !== null) {
+    const re = computeStandard(incomeAnnual, o.realExp, o);
+    realItem = { name: "Skutečné výdaje", sub: "daňová evidence / účetnictví, uplatníte slevy i odpočty", total: re.total, table: rowTable(re) };
+  }
+
+  const allItems = profiles.flatMap(p => [p.pausal, p.vp]).concat(realItem ? [realItem] : []);
+  const avail = allItems.filter(i => !i.na);
+  const best = avail.reduce((a, b) => (b.total < a.total ? b : a));
+  const runner = avail.filter(i => i !== best).sort((a, b) => a.total - b.total)[0];
+  const save = runner ? runner.total - best.total : 0;
+
+  const lost = [];
+  const cc = childCreditTotal(o.children);
+  if (cc) lost.push(["Daňové zvýhodnění na děti (nelze uplatnit)", "−" + fmt(cc), false]);
+  if (o.spouse) lost.push(["Sleva na manžela/manželku (nelze uplatnit)", "−" + fmt(P.slevaManzel), false]);
+  if (o.mortgage) lost.push(["Odpočet úroků z hypotéky — daňový efekt", "−" + fmt(Math.min(o.mortgage, P.mortgageCap) * P.taxLow), false]);
+  if (o.pension) lost.push(["Odpočet penzijka / DIP — daňový efekt", "−" + fmt(Math.min(o.pension, P.pensionCap) * P.taxLow), false]);
+  if (!lost.length) lost.push(["Žádné slevy ani odpočty nezadány — paušál vás o nic nepřipravuje", "0 Kč", true]);
+  lost.push(["Žádné daňové přiznání, přehledy pro ČSSZ a pojišťovnu, nižší riziko kontroly", "+ klid a ušetřený čas", true]);
+
+  return { raw, incomeAnnual, o, profiles, realItem, best, runner, save, lost };
+}
+
+function render() {
+  const ctx = computeAll();
+  const { incomeAnnual, raw, profiles, realItem, best, runner, save, lost } = ctx;
+
+  $("incomeVal").textContent = fmt(raw) + (incomeMode === "year" ? " / rok" : " / měsíc");
+  $("incomeAlt").textContent = incomeMode === "year"
+    ? `≈ ${fmt(Math.round(raw / 12))} / měsíc`
+    : `= ${fmt(incomeAnnual)} / rok`;
+
+  $("verdict").innerHTML = `
+    <div class="v-label">Nejvýhodnější pro vás</div>
+    <div class="v-main">${best.name}${runner ? ` — ušetříte <mark>${fmt(save)}</mark> ročně` : ""}</div>
+    <div class="v-sub">Celkové roční odvody ${fmt(best.total)}${runner ? ` oproti ${fmt(runner.total)} (${runner.name.toLowerCase()})` : ""}. Efektivní zatížení ${(best.total / incomeAnnual * 100).toFixed(1).replace(".", ",")} % příjmů.</div>`;
+
+  let cardsHtml = profiles.map(p => `
+    <div class="profile-group">
+      <h3 class="profile-head">${p.title}</h3>
+      <div class="card-row">
+        ${cardHTML(p.pausal, best, incomeAnnual)}
+        ${cardHTML(p.vp, best, incomeAnnual)}
+      </div>
+    </div>`).join("");
+  if (realItem) {
+    cardsHtml += `
+    <div class="profile-group">
+      <h3 class="profile-head">Vlastní odhad — skutečné výdaje</h3>
+      <div class="card-row">
+        ${cardHTML(realItem, best, incomeAnnual)}
+      </div>
+    </div>`;
+  }
+  $("cards").innerHTML = cardsHtml;
+
+  $("lostList").innerHTML = lost.map(([t, a, gain]) =>
+    `<li><span>${t}</span><span class="amt${gain ? " gain" : ""}">${a}</span></li>`).join("");
+
+  $("julyNotice").hidden = !profiles.some(p => p.pausal.pasmo === 1);
+}
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/* samostatný, stažitelný HTML report — window.print() uvnitř iframu artefaktu
+   je tiše potlačen (sandbox bez allow-modals), proto tiskneme až z otevřeného
+   staženého souboru, kde běží mimo sandbox */
+function reportCardHTML(item, best, incomeAnnual) {
+  if (item.na) return `<div class="rcard"><h3>${esc(item.name)}</h3><p class="na">${esc(item.naMsg)}</p></div>`;
+  const isBest = item === best;
+  return `<div class="rcard${isBest ? " best" : ""}">
+    ${isBest ? '<div class="rbadge">Vítěz</div>' : ""}
+    <h3>${esc(item.name)}</h3>
+    <p class="rsub">${esc(item.sub)}</p>
+    <p class="rtotal">${esc(fmt(item.total))} / rok</p>
+    ${item.table}
+    <p class="rnet">Čistý příjem po odvodech: <b>${esc(fmt(incomeAnnual - item.total))}</b></p>
+  </div>`;
+}
+
+function buildReportHTML(ctx) {
+  const { incomeAnnual, profiles, realItem, best, runner, save, lost } = ctx;
+  const dateStr = new Date().toLocaleDateString("cs-CZ");
+
+  const profilesHtml = profiles.map(p => `
+    <section class="rgroup">
+      <h2>${esc(p.title)}</h2>
+      <div class="rrow">${reportCardHTML(p.pausal, best, incomeAnnual)}${reportCardHTML(p.vp, best, incomeAnnual)}</div>
+    </section>`).join("") + (realItem ? `
+    <section class="rgroup">
+      <h2>Vlastní odhad — skutečné výdaje</h2>
+      <div class="rrow">${reportCardHTML(realItem, best, incomeAnnual)}</div>
+    </section>` : "");
+
+  const lostHtml = lost.map(([t, a]) => `<li><span>${esc(t)}</span><b>${esc(a)}</b></li>`).join("");
+
+  return `<!doctype html><html lang="cs"><head><meta charset="utf-8">
+<title>Přehled OSVČ 2026 — paušální daň vs. výdajový paušál</title>
+<style>
+body{font-family:Georgia,"Times New Roman",serif;color:#141414;background:#fff;max-width:720px;margin:32px auto;padding:0 20px 40px;line-height:1.5}
+h1{font-size:24px;margin:0 0 4px}
+.meta{font-family:"Courier New",monospace;font-size:12px;color:#717171;margin-bottom:20px}
+.verdict{border:1.5px solid #141414;border-radius:2px;background:#EAF5DE;padding:16px 18px;margin-bottom:22px}
+.verdict b{color:#4C6428}
+h2{font-family:"Courier New",monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#717171;border-bottom:1.5px dotted #C7CFD3;padding-bottom:6px;margin:26px 0 12px}
+.rrow{display:flex;gap:16px;flex-wrap:wrap}
+.rcard{flex:1 1 260px;border:1.5px solid #C7CFD3;border-radius:2px;padding:14px 16px;position:relative}
+.rcard.best{border-color:#141414}
+.rbadge{position:absolute;top:-11px;right:10px;background:#fff;border:2px solid #6AA744;color:#6AA744;font-family:"Courier New",monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:3px}
+.rcard h3{margin:0 0 2px;font-size:15px}
+.rsub{font-size:12.5px;color:#717171;font-style:italic;margin:0 0 8px}
+.rtotal{font-family:"Courier New",monospace;font-weight:700;font-size:19px;margin:0 0 6px}
+.rcard table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px}
+.rcard td{padding:3px 0;border-top:1px dotted #C7CFD3}
+.rcard td:last-child{text-align:right;font-family:"Courier New",monospace;font-weight:700}
+.rnet{font-size:12.5px;font-weight:700;border-top:1px dotted #C7CFD3;padding-top:8px;margin:0}
+.rnet b{color:#4C6428}
+.na{color:#717171;font-style:italic;font-size:13px}
+.lost{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.lost li{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;border-bottom:1px dotted #C7CFD3;padding-bottom:6px}
+footer{margin-top:30px;font-size:11.5px;color:#717171;border-top:1.5px dotted #C7CFD3;padding-top:12px;line-height:1.6}
+.actions{margin:22px 0;text-align:center}
+button{background:#00BFE8;color:#141414;border:1.5px solid #141414;border-radius:2px;padding:10px 20px;font:700 14px Georgia,serif;cursor:pointer}
+@media print{.actions{display:none}}
+</style></head>
+<body>
+<h1>Paušální daň, nebo výdajový paušál?</h1>
+<div class="meta">Přehled vygenerován ${esc(dateStr)} · příjem ${esc(fmt(incomeAnnual))} / rok · parametry 2026 po červencové novele</div>
+
+<div class="verdict">
+  <b>Nejvýhodnější:</b> ${esc(best.name)}${runner ? ` — ušetříte ${esc(fmt(save))} ročně oproti ${esc(runner.name.toLowerCase())}` : ""}.<br>
+  Celkové roční odvody ${esc(fmt(best.total))} (${(best.total / incomeAnnual * 100).toFixed(1).replace(".", ",")} % příjmů).
+</div>
+
+${profilesHtml}
+
+<h2>Co v paušálním režimu ztrácíte a získáváte</h2>
+<ul class="lost">${lostHtml}</ul>
+
+<div class="actions"><button onclick="window.print()">Vytisknout / Uložit jako PDF</button></div>
+
+<footer>
+  Orientační výpočet, nejde o daňové poradenství. Parametry 2026: paušální daň 9 162 / 16 745 / 27 139 Kč měsíčně,
+  min. zálohy 5 005 Kč sociální + 3 306 Kč zdravotní, průměrná mzda 48 967 Kč.
+</footer>
+
+<script>window.addEventListener("load", () => setTimeout(() => window.print(), 300));<\/script>
+</body></html>`;
+}
+
+inputs.forEach(id => $(id).addEventListener("input", render));
+document.querySelectorAll('input[name="incomeMode"]').forEach(r => r.addEventListener("change", e => setMode(e.target.value)));
+
+$("printBtn").addEventListener("click", () => {
+  const html = buildReportHTML(computeAll());
+  const blob = new Blob([html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "prehled-osvc-2026.html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+});
+
+$("shareBtn").addEventListener("click", () => {
+  const code = `${incomeMode === "month" ? "M" : "R"}-${Math.round(+$("income").value)}`;
+  const field = $("shareCode");
+  const status = $("shareStatus");
+  field.value = code;
+  field.select();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(
+      () => { status.textContent = "Kód zkopírován do schránky."; },
+      () => { status.textContent = "Kód je vybraný výše — zkopírujte přes Ctrl+C."; }
+    );
+  } else {
+    status.textContent = "Kód je vybraný výše — zkopírujte přes Ctrl+C.";
+  }
+});
+
+function importSharedCode() {
+  const status = $("shareStatus");
+  const parsed = parseShareCode($("importCode").value);
+  if (!parsed) {
+    status.textContent = "Kód nerozpoznán — očekávaný tvar např. R-1200000 nebo M-100000.";
+    return;
+  }
+  applyIncome(parsed.mode, parsed.castka);
+  render();
+  status.textContent = "Částka načtena.";
+}
+$("importBtn").addEventListener("click", importSharedCode);
+$("importCode").addEventListener("keydown", e => { if (e.key === "Enter") importSharedCode(); });
+
+applyIncomeFromParams();
+render();
+</script>
+
+</body>
+</html>
