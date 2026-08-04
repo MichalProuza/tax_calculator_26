@@ -326,7 +326,7 @@ footer a{color:var(--accent-ink)}
     </div>
 
     <footer>
-      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: nezohledňuje minimální mzdu pro daňový bonus, vedlejší činnost, souběh se zaměstnáním ani slevy na invaliditu. HPP ekvivalent: zaměstnanec 7,1 % soc. + 4,5 % zdr., zaměstnavatel 24,8 % + 9 %, bez benefitů a náhrad.<br>
+      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: nezohledňuje minimální mzdu pro daňový bonus, vedlejší činnost, souběh se zaměstnáním ani slevy na invaliditu. HPP ekvivalent: zaměstnanec 7,1 % soc. + 4,5 % zdr., zaměstnavatel 24,8 % + 9 %, hrubá mzda nejméně ve výši minimální mzdy 22 400 Kč / měs., bez benefitů a náhrad.<br>
       Parametry 2026: paušální daň 9 162 / 16 745 / 27 139 Kč měs. · min. zálohy 5 005 Kč soc. + 3 306 Kč zdr. · průměrná mzda 48 967 Kč. Zdroje:
       <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa</a> ·
       <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR</a> ·
@@ -362,7 +362,8 @@ const EMP = {
   socEmp: .071,        // 6,5 % důchodové + 0,6 % nemocenské
   zdrEmp: .045,
   socEmployer: .248,
-  zdrEmployer: .09
+  zdrEmployer: .09,
+  minWageMonth: 22400  // minimální mzda 2026 (sdělení č. 356/2025 Sb.)
 };
 
 function employeeNetYear(grossYear, o) {
@@ -392,11 +393,14 @@ function grossForNet(targetNet, o) {
 
 function computeHpp(incomeAnnual, best, o) {
   const targetNet = incomeAnnual - best.total;
-  const grossMonth = Math.ceil(grossForNet(targetNet, o) / 12 / 100) * 100;
+  let grossMonth = Math.ceil(grossForNet(targetNet, o) / 12 / 100) * 100;
+  const clamped = grossMonth < EMP.minWageMonth;   // plný úvazek nejde pod minimální mzdu
+  if (clamped) grossMonth = EMP.minWageMonth;
   const grossYear = grossMonth * 12;
   const employerYear = Math.round(grossYear * (1 + EMP.socEmployer + EMP.zdrEmployer));
   return {
-    targetNet, grossMonth, grossYear,
+    targetNet, grossMonth, grossYear, clamped,
+    netAtGross: employeeNetYear(grossYear, o),
     employerMonth: Math.round(employerYear / 12), employerYear,
     diff: employerYear - incomeAnnual
   };
@@ -618,10 +622,11 @@ function render() {
   $("hppBody").innerHTML = `
     <p>Stejný čistý příjem jako u nejvýhodnější varianty (<b>${fmt(h.targetNet)}</b> / rok, tj. ≈ ${fmt(h.targetNet / 12)} / měsíc) by v zaměstnání vyžadoval:</p>
     <table>
-      <tr><td>Hrubá mzda</td><td>${fmt(h.grossMonth)} / měs. · ${fmt(h.grossYear)} / rok</td></tr>
+      <tr><td>Hrubá mzda${h.clamped ? " (= minimální mzda)" : ""}</td><td>${fmt(h.grossMonth)} / měs. · ${fmt(h.grossYear)} / rok</td></tr>
       <tr><td>Náklad zaměstnavatele (hrubá + 33,8 % odvodů)</td><td>${fmt(h.employerMonth)} / měs. · ${fmt(h.employerYear)} / rok</td></tr>
       <tr><td>Srovnání s roční fakturací ${fmt(incomeAnnual)}</td><td>${hppDiffText(h, incomeAnnual)}</td></tr>
     </table>
+    ${h.clamped ? `<div class="note"><b>Pozn.:</b> vypočtený ekvivalent vychází pod minimální mzdou ${fmt(EMP.minWageMonth)} / měs., na kterou má zaměstnanec na plný úvazek nárok vždy — uvedena je proto minimální mzda. Čistá mzda by pak byla ≈ ${fmt(h.netAtGross / 12)} / měs., tedy víc než čistý příjem OSVČ.</div>` : ""}
     <div class="note">Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní, stejné slevy a odpočty jako výše. Zaměstnavatel: 24,8 % + 9 %. Nezohledňuje benefity, stravenky, dovolenou ani nemocenskou — reálná hodnota HPP je tedy o něco vyšší, než ukazuje samotná čistá mzda.</div>`;
 
   $("julyNotice").hidden = !profiles.some(p => p.pausal.pasmo === 1);
@@ -709,7 +714,7 @@ ${profilesHtml}
 <h2>Ekvivalent na HPP</h2>
 <ul class="lost">
   <li><span>Cílový čistý příjem (${esc(best.name)})</span><b>${esc(fmt(hpp.targetNet))} / rok · ≈ ${esc(fmt(hpp.targetNet / 12))} / měs.</b></li>
-  <li><span>Potřebná hrubá mzda</span><b>${esc(fmt(hpp.grossMonth))} / měs. · ${esc(fmt(hpp.grossYear))} / rok</b></li>
+  <li><span>Potřebná hrubá mzda${hpp.clamped ? " (= minimální mzda — pod ni plný úvazek nelze; čistá mzda pak převýší čistý příjem OSVČ)" : ""}</span><b>${esc(fmt(hpp.grossMonth))} / měs. · ${esc(fmt(hpp.grossYear))} / rok</b></li>
   <li><span>Náklad zaměstnavatele (hrubá + 33,8 %)</span><b>${esc(fmt(hpp.employerMonth))} / měs. · ${esc(fmt(hpp.employerYear))} / rok</b></li>
   <li><span>Srovnání s roční fakturací ${esc(fmt(incomeAnnual))}</span><b>${esc(hppDiffText(hpp, incomeAnnual))}</b></li>
 </ul>
