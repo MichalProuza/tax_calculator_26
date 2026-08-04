@@ -176,6 +176,14 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
 .lost .amt{font-family:"Courier New",Courier,monospace;font-weight:700;white-space:nowrap;color:var(--accent-ink)}
 .lost .amt.gain{color:var(--good)}
 
+.hpp-body{padding:16px 18px 18px;font-size:14px}
+.hpp-body p{margin:0 0 4px}
+.hpp-body table{width:100%;border-collapse:collapse;font-size:14px}
+.hpp-body td{padding:6px 0;border-bottom:1px dotted var(--line)}
+.hpp-body tr:last-child td{border-bottom:none}
+.hpp-body td:last-child{text-align:right;font-family:"Courier New",Courier,monospace;font-weight:700;white-space:nowrap}
+.hpp-body .note{font-size:12.5px;color:var(--ink-soft);font-style:italic;margin-top:10px}
+
 .notice{
   border:1.5px solid var(--ink);border-radius:2px;background:var(--marker);
   padding:14px 18px;font-size:14px;transform:rotate(.4deg);box-shadow:var(--hard-shadow);
@@ -286,6 +294,11 @@ footer a{color:var(--accent-ink)}
       <ul id="lostList"></ul>
     </div>
 
+    <div class="sheet" id="hppPanel">
+      <h2><span class="no">odd. C</span>Ekvivalent na HPP</h2>
+      <div class="hpp-body" id="hppBody"></div>
+    </div>
+
     <div class="notice" id="julyNotice" hidden>
       <b>Pozor — červenec 2026:</b> záloha v I. pásmu se novelou zpětně snížila z 9 984 Kč na <b>9 162 Kč</b>. Za leden–červen vám vznikl přeplatek <b>4 932 Kč</b> — červencovou platbu proto stačí poslat ve výši <b>4 230 Kč</b>, jinak o přeplatek žádáte až po konci roku.
     </div>
@@ -313,7 +326,7 @@ footer a{color:var(--accent-ink)}
     </div>
 
     <footer>
-      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: nezohledňuje minimální mzdu pro daňový bonus, vedlejší činnost, souběh se zaměstnáním ani slevy na invaliditu.<br>
+      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: nezohledňuje minimální mzdu pro daňový bonus, vedlejší činnost, souběh se zaměstnáním ani slevy na invaliditu. HPP ekvivalent: zaměstnanec 7,1 % soc. + 4,5 % zdr., zaměstnavatel 24,8 % + 9 %, bez benefitů a náhrad.<br>
       Parametry 2026: paušální daň 9 162 / 16 745 / 27 139 Kč měs. · min. zálohy 5 005 Kč soc. + 3 306 Kč zdr. · průměrná mzda 48 967 Kč. Zdroje:
       <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa</a> ·
       <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR</a> ·
@@ -343,6 +356,51 @@ const P = {
 };
 
 const fmt = n => new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 }).format(Math.round(n)) + " Kč";
+
+/* ---------- zaměstnanec (HPP) 2026 ---------- */
+const EMP = {
+  socEmp: .071,        // 6,5 % důchodové + 0,6 % nemocenské
+  zdrEmp: .045,
+  socEmployer: .248,
+  zdrEmployer: .09
+};
+
+function employeeNetYear(grossYear, o) {
+  const soc = Math.round(grossYear * EMP.socEmp);
+  const zdr = Math.round(grossYear * EMP.zdrEmp);
+  let base = Math.max(0, grossYear - Math.min(o.mortgage, P.mortgageCap) - Math.min(o.pension, P.pensionCap));
+  base = Math.floor(base / 100) * 100;
+  let tax = base <= P.taxThreshold
+    ? base * P.taxLow
+    : P.taxThreshold * P.taxLow + (base - P.taxThreshold) * P.taxHigh;
+  tax = Math.max(0, Math.round(tax) - P.slevaPoplatnik - (o.spouse ? P.slevaManzel : 0));
+  const dan = tax - childCreditTotal(o.children);
+  return grossYear - soc - zdr - dan;
+}
+
+/* hrubá roční mzda pro cílový čistý příjem — binární půlení
+   (čistá mzda roste s hrubou monotónně, analytická inverze se slevami
+   a bonusem je nepraktická) */
+function grossForNet(targetNet, o) {
+  let lo = 0, hi = 30000000;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    if (employeeNetYear(mid, o) < targetNet) lo = mid; else hi = mid;
+  }
+  return hi;
+}
+
+function computeHpp(incomeAnnual, best, o) {
+  const targetNet = incomeAnnual - best.total;
+  const grossMonth = Math.ceil(grossForNet(targetNet, o) / 12 / 100) * 100;
+  const grossYear = grossMonth * 12;
+  const employerYear = Math.round(grossYear * (1 + EMP.socEmployer + EMP.zdrEmployer));
+  return {
+    targetNet, grossMonth, grossYear,
+    employerMonth: Math.round(employerYear / 12), employerYear,
+    diff: employerYear - incomeAnnual
+  };
+}
 
 function childCreditTotal(n) {
   let s = 0;
@@ -510,7 +568,14 @@ function computeAll() {
   if (!lost.length) lost.push(["Žádné slevy ani odpočty nezadány — paušál vás o nic nepřipravuje", "0 Kč", true]);
   lost.push(["Žádné daňové přiznání, přehledy pro ČSSZ a pojišťovnu, nižší riziko kontroly", "+ klid a ušetřený čas", true]);
 
-  return { raw, incomeAnnual, o, profiles, realItem, best, runner, save, lost };
+  return { raw, incomeAnnual, o, profiles, realItem, best, runner, save, lost, hpp: computeHpp(incomeAnnual, best, o) };
+}
+
+function hppDiffText(hpp, incomeAnnual) {
+  const pct = (Math.abs(hpp.diff) / incomeAnnual * 100).toFixed(1).replace(".", ",");
+  return hpp.diff >= 0
+    ? `o ${fmt(hpp.diff)} (${pct} %) dráž než fakturace`
+    : `o ${fmt(-hpp.diff)} (${pct} %) levněji než fakturace`;
 }
 
 function render() {
@@ -549,6 +614,16 @@ function render() {
   $("lostList").innerHTML = lost.map(([t, a, gain]) =>
     `<li><span>${t}</span><span class="amt${gain ? " gain" : ""}">${a}</span></li>`).join("");
 
+  const h = ctx.hpp;
+  $("hppBody").innerHTML = `
+    <p>Stejný čistý příjem jako u nejvýhodnější varianty (<b>${fmt(h.targetNet)}</b> / rok, tj. ≈ ${fmt(h.targetNet / 12)} / měsíc) by v zaměstnání vyžadoval:</p>
+    <table>
+      <tr><td>Hrubá mzda</td><td>${fmt(h.grossMonth)} / měs. · ${fmt(h.grossYear)} / rok</td></tr>
+      <tr><td>Náklad zaměstnavatele (hrubá + 33,8 % odvodů)</td><td>${fmt(h.employerMonth)} / měs. · ${fmt(h.employerYear)} / rok</td></tr>
+      <tr><td>Srovnání s roční fakturací ${fmt(incomeAnnual)}</td><td>${hppDiffText(h, incomeAnnual)}</td></tr>
+    </table>
+    <div class="note">Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní, stejné slevy a odpočty jako výše. Zaměstnavatel: 24,8 % + 9 %. Nezohledňuje benefity, stravenky, dovolenou ani nemocenskou — reálná hodnota HPP je tedy o něco vyšší, než ukazuje samotná čistá mzda.</div>`;
+
   $("julyNotice").hidden = !profiles.some(p => p.pausal.pasmo === 1);
 }
 
@@ -573,7 +648,7 @@ function reportCardHTML(item, best, incomeAnnual) {
 }
 
 function buildReportHTML(ctx) {
-  const { incomeAnnual, profiles, realItem, best, runner, save, lost } = ctx;
+  const { incomeAnnual, profiles, realItem, best, runner, save, lost, hpp } = ctx;
   const dateStr = new Date().toLocaleDateString("cs-CZ");
 
   const profilesHtml = profiles.map(p => `
@@ -630,6 +705,14 @@ ${profilesHtml}
 
 <h2>Co v paušálním režimu ztrácíte a získáváte</h2>
 <ul class="lost">${lostHtml}</ul>
+
+<h2>Ekvivalent na HPP</h2>
+<ul class="lost">
+  <li><span>Cílový čistý příjem (${esc(best.name)})</span><b>${esc(fmt(hpp.targetNet))} / rok · ≈ ${esc(fmt(hpp.targetNet / 12))} / měs.</b></li>
+  <li><span>Potřebná hrubá mzda</span><b>${esc(fmt(hpp.grossMonth))} / měs. · ${esc(fmt(hpp.grossYear))} / rok</b></li>
+  <li><span>Náklad zaměstnavatele (hrubá + 33,8 %)</span><b>${esc(fmt(hpp.employerMonth))} / měs. · ${esc(fmt(hpp.employerYear))} / rok</b></li>
+  <li><span>Srovnání s roční fakturací ${esc(fmt(incomeAnnual))}</span><b>${esc(hppDiffText(hpp, incomeAnnual))}</b></li>
+</ul>
 
 <div class="actions"><button onclick="window.print()">Vytisknout / Uložit jako PDF</button></div>
 
