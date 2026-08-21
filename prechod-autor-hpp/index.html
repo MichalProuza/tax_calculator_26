@@ -293,6 +293,20 @@ function grossForNet(targetNet) {
   return hi;
 }
 
+/* hrubá mzda, při níž pokles čisté = nárůst nákladu firmy:
+   authorNet − net(g) = employer(g) − authorCost
+   ⇔ net(g) + employer(g) = authorNet + authorCost (levá strana roste monotónně) */
+function grossForFairSplit(authorNet, authorCost) {
+  const target = authorNet + authorCost;
+  let lo = 0, hi = 3000000;
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo + hi) / 2;
+    const h = hppMonth(mid);
+    if (h.net + h.employer < target) lo = mid; else hi = mid;
+  }
+  return hi;
+}
+
 /* ---------- OSVČ s výdajovým paušálem 40 % (roční výpočet, 0 dětí, jen základní sleva) ---------- */
 function vp40Year(incomeYear) {
   const expenses = Math.min(incomeYear * .4, 2000000 * .4);   // strop paušálních výdajů 800 000 Kč
@@ -418,15 +432,20 @@ function render() {
       <div class="cost"><span>Náklad firmy (hrubá + 33,8 %)</span><b>${fmt(h.employer)}</b></div>
     </div>`;
 
-  /* orientační body: stejná čistá / stejný náklad firmy */
+  /* orientační body: stejná čistá / férový střed / stejný náklad firmy */
   const gSameNet = Math.round(grossForNet(authorNet) / 100) * 100;
   const gSameCost = Math.round(authorCost / EMPLOYER_MULT / 100) * 100;
+  const gFair = Math.round(grossForFairSplit(authorNet, authorCost) / 100) * 100;
   const sameNetH = hppMonth(Math.max(gSameNet, 0));
   const sameCostH = hppMonth(Math.max(gSameCost, 0));
+  const fairH = hppMonth(Math.max(gFair, 0));
+  const fairShare = Math.round(((authorNet - fairH.net) + (fairH.employer - authorCost)) / 2);
 
   const bench = [];
   bench.push([`Stejná čistá jako dnes (${fmt(authorNet)}) — potřebná hrubá; náklad firmy pak ${fmt(sameNetH.employer)}, tedy o ${fmt(sameNetH.employer - authorCost)} víc`,
     fmt(gSameNet), gSameNet]);
+  bench.push([`Střed — vaše čistá klesne přesně o tolik, o kolik náklad firmy vzroste (obě strany nesou ≈ ${fmt(fairShare)} / měs.); čistá pak ${fmt(fairH.net)}, náklad firmy ${fmt(fairH.employer)}`,
+    fmt(gFair), gFair]);
   bench.push([`Stejný náklad firmy jako dnes (${fmt(authorCost)}) — odpovídající hrubá; čistá pak ${fmt(sameCostH.net)}, tedy o ${fmt(authorNet - sameCostH.net)} míň než dnes`,
     fmt(gSameCost), gSameCost]);
 
