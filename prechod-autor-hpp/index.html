@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Přechod z autorské smlouvy na HPP · Kalkulačka 2026</title>
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style>
+<style>
+/*
+Stejný design jako hlavní kalkulačka — Zoner brand paleta (brand.zoner.com/barvy),
+typografie „papírového formuláře".
+*/
+:root{
+  --paper:#E8F9FD; --surface:#FFFFFF; --ink:#141414; --ink-soft:#717171;
+  --accent:#00BFE8; --accent-ink:#3099BF; --marker:#CFEFFA;
+  --good:#6AA744; --good-tint:#EAF5DE;
+  --bad:#C0392B; --bad-tint:#FBEAE7;
+  --line:#C7CFD3;
+  --hard-shadow:4px 4px 0 rgba(20,20,20,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#141414; --surface:#1E2021; --ink:#F2F5F6; --ink-soft:#A6ADAF;
+    --accent:#00BFE8; --accent-ink:#7FDFF2; --marker:#123642;
+    --good:#93D072; --good-tint:#1E2A16;
+    --bad:#F0907F; --bad-tint:#33201B;
+    --line:#3A3F41;
+    --hard-shadow:4px 4px 0 rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141414; --surface:#1E2021; --ink:#F2F5F6; --ink-soft:#A6ADAF;
+  --accent:#00BFE8; --accent-ink:#7FDFF2; --marker:#123642;
+  --good:#93D072; --good-tint:#1E2A16;
+  --bad:#F0907F; --bad-tint:#33201B;
+  --line:#3A3F41;
+  --hard-shadow:4px 4px 0 rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{
+  --paper:#E8F9FD; --surface:#FFFFFF; --ink:#141414; --ink-soft:#717171;
+  --accent:#00BFE8; --accent-ink:#3099BF; --marker:#CFEFFA;
+  --good:#6AA744; --good-tint:#EAF5DE;
+  --bad:#C0392B; --bad-tint:#FBEAE7;
+  --line:#C7CFD3;
+  --hard-shadow:4px 4px 0 rgba(20,20,20,.18);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font:15.5px/1.6 Georgia,"Times New Roman",serif;
+}
+.mono{font-family:"Courier New",Courier,monospace;font-weight:700}
+.wrap{max-width:1080px;margin:0 auto;padding:34px 20px 64px}
+header.top{margin-bottom:30px;max-width:70ch}
+.eyebrow{
+  font-family:"Courier New",Courier,monospace;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px;
+}
+.eyebrow b{color:var(--accent-ink)}
+.eyebrow a{color:var(--accent-ink)}
+h1{
+  font-size:clamp(27px,3.8vw,38px);line-height:1.12;margin:0 0 6px;font-weight:700;
+  text-wrap:balance;letter-spacing:-.01em;
+}
+h1 .u{
+  background:linear-gradient(to top, var(--accent) 0, var(--accent) .14em, transparent .14em);
+  padding-bottom:.06em;
+}
+.lede{color:var(--ink-soft);margin:10px 0 0;font-style:italic}
+.grid{display:grid;grid-template-columns:395px 1fr;gap:26px;align-items:start}
+@media (max-width:880px){.grid{grid-template-columns:1fr}}
+
+.sheet{
+  background:var(--surface);border:1.5px solid var(--ink);
+  border-radius:2px;box-shadow:var(--hard-shadow);
+}
+.sheet h2{
+  font-family:"Courier New",Courier,monospace;font-size:12.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink);margin:0;padding:13px 18px 11px;
+  border-bottom:1.5px solid var(--ink);font-weight:700;
+}
+.sheet h2 .no{color:var(--ink-soft);margin-right:8px}
+.form-body{padding:18px;display:flex;flex-direction:column;gap:20px}
+label.fl{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.hint{font-size:12.5px;color:var(--ink-soft);margin-top:5px;font-style:italic}
+input[type=number]{
+  width:100%;padding:7px 2px;border:none;border-bottom:1.5px dotted var(--line);
+  border-radius:0;background:transparent;color:var(--ink);
+  font-family:"Courier New",Courier,monospace;font-size:16px;font-weight:700;
+}
+input[type=number]::placeholder{font-weight:400;font-style:italic}
+input[type=number]:focus,input[type=range]:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;
+}
+input[type=number]:focus{border-bottom-style:solid;border-bottom-color:var(--accent-ink)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
+.range-val{font-family:"Courier New",Courier,monospace;font-weight:700;font-size:21px}
+.range-alt{font-family:"Courier New",Courier,monospace;font-size:12.5px;color:var(--ink-soft);margin:2px 0 6px}
+.assump{
+  font-size:12px;color:var(--ink-soft);border-top:1.5px solid var(--ink);
+  padding-top:11px;margin-top:2px;font-style:italic;
+}
+
+.mode-toggle{display:flex;width:max-content;border:1.5px solid var(--line);margin-bottom:12px}
+.mode-toggle label{
+  position:relative;font-family:"Courier New",Courier,monospace;font-size:12.5px;
+  letter-spacing:.08em;text-transform:uppercase;padding:6px 15px;cursor:pointer;
+  color:var(--ink-soft);
+}
+.mode-toggle label:first-child{border-right:1.5px dotted var(--line)}
+.mode-toggle label:has(input:checked){background:var(--marker);color:var(--ink);font-weight:700}
+.mode-toggle input{position:absolute;opacity:0;pointer-events:none}
+.mode-toggle input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+
+/* výsledky */
+.results{display:flex;flex-direction:column;gap:20px}
+.verdict{
+  border:1.5px solid var(--ink);border-radius:2px;background:var(--surface);
+  padding:18px 20px;box-shadow:var(--hard-shadow);
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;
+}
+@media (max-width:560px){.verdict{grid-template-columns:1fr}}
+.verdict .v-label{
+  font-family:"Courier New",Courier,monospace;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-soft);font-weight:700;
+}
+.verdict .v-main{font-family:"Courier New",Courier,monospace;font-size:24px;font-weight:700;margin:6px 0 2px;white-space:nowrap}
+.verdict .v-main.down{color:var(--bad)}
+.verdict .v-main.up{color:var(--accent-ink)}
+.verdict .v-main.ok{color:var(--good)}
+.verdict .v-sub{color:var(--ink-soft);font-size:13px}
+
+.card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.card{
+  background:var(--surface);border:1.5px solid var(--line);border-radius:2px;
+  padding:16px;position:relative;
+}
+.card.now{border:1.5px solid var(--ink);box-shadow:var(--hard-shadow)}
+.card .badge{
+  position:absolute;top:-13px;right:10px;transform:rotate(-5deg);
+  border:2px solid var(--accent-ink);color:var(--accent-ink);background:var(--surface);
+  font-family:"Courier New",Courier,monospace;font-size:12px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;padding:3px 9px 2px;border-radius:3px;
+}
+.card .badge.g{border-color:var(--good);color:var(--good)}
+.card h3{margin:0 0 2px;font-size:15px}
+.card .sub{font-size:12.5px;color:var(--ink-soft);min-height:2.6em;font-style:italic}
+.card table{width:100%;border-collapse:collapse;font-size:13px}
+.card td{padding:4px 0;border-top:1px dotted var(--line)}
+.card td:last-child{text-align:right;font-family:"Courier New",Courier,monospace;font-weight:700;white-space:nowrap}
+.card .net{
+  display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;
+  margin-top:9px;padding-top:9px;border-top:1.5px solid var(--ink);
+}
+.card .net b{font-family:"Courier New",Courier,monospace;white-space:nowrap;color:var(--good)}
+.card .cost{
+  display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;
+  margin-top:6px;
+}
+.card .cost b{font-family:"Courier New",Courier,monospace;white-space:nowrap;color:var(--accent-ink)}
+
+.bench{padding:16px 18px 18px}
+.bench h2{padding:0 0 10px;border:none}
+.bench ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.bench li{display:flex;justify-content:space-between;gap:14px;font-size:14px;border-bottom:1px dotted var(--line);padding-bottom:8px}
+.bench li:last-child{border-bottom:none;padding-bottom:0}
+.bench .amt{font-family:"Courier New",Courier,monospace;font-weight:700;white-space:nowrap;color:var(--accent-ink)}
+.bench button.jump{
+  background:none;border:none;padding:0;margin-left:8px;cursor:pointer;
+  font:italic 12.5px Georgia,serif;color:var(--accent-ink);text-decoration:underline;
+}
+
+.notice{
+  border:1.5px solid var(--ink);border-radius:2px;background:var(--marker);
+  padding:14px 18px;font-size:14px;transform:rotate(.4deg);box-shadow:var(--hard-shadow);
+}
+.notice b:first-child{font-family:"Courier New",Courier,monospace;text-transform:uppercase;letter-spacing:.06em;font-size:12.5px}
+
+footer{margin-top:36px;font-size:12px;color:var(--ink-soft);line-height:1.75;border-top:1.5px dotted var(--line);padding-top:14px}
+footer a{color:var(--accent-ink)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Tiskopis č. 2 / prototyp · sezóna <b>2026</b> · <a href="../">← zpět na kalkulačku OSVČ</a></div>
+  <h1>Z autorské smlouvy <span class="u">na HPP</span></h1>
+  <p class="lede">Zadejte současnou měsíční autorskou odměnu, zvolte její zdanění — paušální daň v I. pásmu, nebo výdajový paušál 40 % — a posuvníkem hledejte hrubou mzdu na HPP. Uvidíte, o kolik klesne váš čistý příjem a o kolik vzroste celkový náklad firmy oproti honoráři. Počítáno bez dětí, jen se základní slevou na poplatníka.</p>
+</header>
+
+<div class="grid">
+  <!-- ================= FORM ================= -->
+  <section class="sheet" aria-label="Vstupní údaje">
+    <h2><span class="no">odd. A</span>Vstupy</h2>
+    <div class="form-body">
+      <div>
+        <div class="mode-toggle" role="radiogroup" aria-label="Zdanění honoráře">
+          <label><input type="radio" name="taxMode" value="pausal" checked><span>Paušální daň I.</span></label>
+          <label><input type="radio" name="taxMode" value="vp40"><span>Výd. paušál 40 %</span></label>
+        </div>
+        <label class="fl" for="fee">Současná autorská odměna / měsíc</label>
+        <input type="number" id="fee" min="0" step="1000" value="60000">
+        <div class="hint" id="feeHint">Fakturovaná (hrubá) částka honoráře. Paušální daň I. pásma z ní ukrajuje pevných 9 162 Kč měsíčně.</div>
+      </div>
+
+      <div>
+        <label class="fl" for="gross">Hrubá mzda na HPP</label>
+        <div class="range-val" id="grossVal">45 000 Kč / měsíc</div>
+        <div class="range-alt" id="grossAlt">= 540 000 Kč / rok</div>
+        <input type="range" id="gross" min="22400" max="250000" step="100" value="45000" aria-label="Hrubá mzda na HPP">
+        <div class="hint">Minimum posuvníku = minimální mzda 22 400 Kč (plný úvazek nesmí být níž).</div>
+      </div>
+
+      <div class="assump">Předpoklady: zdanění honoráře volitelně — paušální daň v I. pásmu (9 162 Kč / měs. po červencové novele, příjmy do 1 mil. Kč ročně), nebo výdajový paušál 40 % (daň 15 / 23 % po základní slevě, pojistné z min. vyměřovacích základů — zálohy nejméně 5 005 Kč soc. + 3 306 Kč zdr.). Vždy 0 dětí, pouze základní sleva na poplatníka, bez dalších slev a odpočtů. Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní. Zaměstnavatel: 24,8 % + 9 % (celkem 33,8 %). Náklad firmy na honorář = samotná fakturovaná částka.</div>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section class="results" aria-live="polite">
+    <div class="verdict" id="verdict"></div>
+
+    <div class="card-row" id="cards"></div>
+
+    <div class="sheet bench">
+      <h2><span class="no">odd. B</span>Orientační body na posuvníku</h2>
+      <ul id="benchList"></ul>
+    </div>
+
+    <div class="notice" id="pasmoNotice" hidden>
+      <b>Pozor:</b> při odměně nad <b>83 333 Kč / měs.</b> (1 mil. Kč ročně) už autor s výdajovým paušálem 40 % do I. pásma paušální daně nespadá — srovnání se současným stavem by vycházelo z vyšší paušální platby.
+    </div>
+
+    <footer>
+      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: honorář zdaněný paušální daní předpokládá aktivní paušální režim OSVČ (hlavní činnost, neplátce DPH, jediný druh příjmů); nezohledňuje benefity, stravenky, placenou dovolenou a nemocenskou na HPP — reálná hodnota HPP je tedy o něco vyšší, než ukazuje samotná čistá mzda. Záloha na daň zaměstnance: 15 % do 146 901 Kč / měs. (3× průměrná mzda 48 967 Kč), 23 % nad.<br>
+      Parametry 2026: paušální daň I. pásmo 9 162 Kč / měs. · min. zálohy OSVČ 5 005 Kč soc. + 3 306 Kč zdr. · minimální mzda 22 400 Kč / měs. · sleva na poplatníka 30 840 Kč / rok · průměrná mzda 48 967 Kč. Zdroje:
+      <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa</a> ·
+      <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR</a>
+    </footer>
+  </section>
+</div>
+</div>
+
+<script>
+"use strict";
+/* ---------- parametry 2026 (po novele, zpětně od ledna) ---------- */
+const P = {
+  avgWage: 48967,
+  taxLow: .15, taxHigh: .23,
+  taxThresholdMonth: 3 * 48967,     // 146 901 Kč — měsíční hranice 23% sazby
+  taxThresholdYear: 36 * 48967,     // roční hranice 23% sazby (OSVČ)
+  slevaMonth: 2570,                 // sleva na poplatníka 30 840 / 12
+  slevaYear: 30840,
+  pausalI: 9162,                    // paušální daň I. pásmo, měsíčně
+  socRate: .292, socShare: .55,
+  socMinYear: 17139 * 12,           // 35 % prům. mzdy
+  socMaxYear: 48 * 48967,
+  zdrRate: .135, zdrShare: .5,
+  zdrMinYear: 24483.5 * 12
+};
+const EMP = {
+  socEmp: .071, zdrEmp: .045,       // zaměstnanec
+  socEmployer: .248, zdrEmployer: .09,
+  minWageMonth: 22400
+};
+const EMPLOYER_MULT = 1 + EMP.socEmployer + EMP.zdrEmployer;   // 1,338
+
+const fmt = n => new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 }).format(Math.round(n)) + " Kč";
+
+/* ---------- měsíční mzdové kalkulace HPP (0 dětí, jen základní sleva) ---------- */
+function hppMonth(gross) {
+  const soc = Math.round(gross * EMP.socEmp);
+  const zdr = Math.round(gross * EMP.zdrEmp);
+  const base = Math.ceil(gross / 100) * 100;                   // základ zaokrouhlený na stovky nahoru
+  let tax = base <= P.taxThresholdMonth
+    ? base * P.taxLow
+    : P.taxThresholdMonth * P.taxLow + (base - P.taxThresholdMonth) * P.taxHigh;
+  tax = Math.max(0, Math.round(tax) - P.slevaMonth);
+  return {
+    gross, soc, zdr, tax,
+    net: gross - soc - zdr - tax,
+    employer: Math.round(gross * EMPLOYER_MULT)
+  };
+}
+
+/* hrubá mzda pro cílovou čistou — binární půlení (čistá roste monotónně) */
+function grossForNet(targetNet) {
+  let lo = 0, hi = 3000000;
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo + hi) / 2;
+    if (hppMonth(mid).net < targetNet) lo = mid; else hi = mid;
+  }
+  return hi;
+}
+
+/* ---------- OSVČ s výdajovým paušálem 40 % (roční výpočet, 0 dětí, jen základní sleva) ---------- */
+function vp40Year(incomeYear) {
+  const expenses = Math.min(incomeYear * .4, 2000000 * .4);   // strop paušálních výdajů 800 000 Kč
+  const profit = Math.max(0, incomeYear - expenses);
+  const base = Math.floor(profit / 100) * 100;
+  let tax = base <= P.taxThresholdYear
+    ? base * P.taxLow
+    : P.taxThresholdYear * P.taxLow + (base - P.taxThresholdYear) * P.taxHigh;
+  tax = Math.max(0, Math.round(tax) - P.slevaYear);
+  const socBase = Math.min(Math.max(profit * P.socShare, P.socMinYear), P.socMaxYear);
+  const soc = Math.ceil(socBase * P.socRate);
+  const zdrBase = Math.max(profit * P.zdrShare, P.zdrMinYear);
+  const zdr = Math.ceil(zdrBase * P.zdrRate);
+  return { tax, soc, zdr, total: tax + soc + zdr };
+}
+
+/* dnešní stav podle zvoleného zdanění honoráře */
+function authorCalc(fee, mode) {
+  if (mode === "pausal") {
+    return {
+      net: fee - P.pausalI,
+      sub: "OSVČ v paušálním režimu, I. pásmo — jediná měsíční platba, žádné přiznání",
+      rows: `<tr><td>Fakturovaná odměna</td><td>${fmt(fee)}</td></tr>
+        <tr><td>Paušální daň (I. pásmo)</td><td>−${fmt(P.pausalI)}</td></tr>`
+    };
+  }
+  const y = vp40Year(fee * 12);
+  return {
+    net: fee - y.total / 12,
+    sub: "OSVČ s výdajovým paušálem 40 % — daňové přiznání a přehledy, hodnoty = roční odvody / 12",
+    rows: `<tr><td>Fakturovaná odměna</td><td>${fmt(fee)}</td></tr>
+      <tr><td>Daň z příjmů</td><td>−${fmt(y.tax / 12)}</td></tr>
+      <tr><td>Sociální poj.</td><td>−${fmt(y.soc / 12)}</td></tr>
+      <tr><td>Zdravotní poj.</td><td>−${fmt(y.zdr / 12)}</td></tr>`
+  };
+}
+
+const FEE_HINTS = {
+  pausal: "Fakturovaná (hrubá) částka honoráře. Paušální daň I. pásma z ní ukrajuje pevných 9 162 Kč měsíčně.",
+  vp40: "Fakturovaná (hrubá) částka honoráře. Daň a pojistné počítáme ročně z 60 % příjmů (výdajový paušál 40 %) a přepočítáváme na měsíc."
+};
+
+const $ = id => document.getElementById(id);
+
+function readFee() {
+  return Math.max(0, +$("fee").value || 0);
+}
+
+function readTaxMode() {
+  return document.querySelector('input[name="taxMode"]:checked').value;
+}
+
+function setGross(v) {
+  const s = $("gross");
+  s.value = Math.min(+s.max, Math.max(+s.min, Math.round(v / +s.step) * +s.step));
+  render();
+}
+
+function deltaBlock(label, value, sub, cls) {
+  return `<div>
+    <div class="v-label">${label}</div>
+    <div class="v-main ${cls}">${value}</div>
+    <div class="v-sub">${sub}</div>
+  </div>`;
+}
+
+function render() {
+  const fee = readFee();
+  const gross = +$("gross").value;
+  const taxMode = readTaxMode();
+
+  $("grossVal").textContent = fmt(gross) + " / měsíc";
+  $("grossAlt").textContent = "= " + fmt(gross * 12) + " / rok";
+  $("feeHint").textContent = FEE_HINTS[taxMode];
+
+  /* dnes: autorský honorář podle zvoleného zdanění */
+  const a = authorCalc(fee, taxMode);
+  const authorNet = a.net;                // čistý příjem autora
+  const authorCost = fee;                 // celkový náklad firmy
+
+  /* nově: HPP */
+  const h = hppMonth(gross);
+
+  const dNet = h.net - authorNet;         // záporné = čistá klesne
+  const dCost = h.employer - authorCost;  // kladné = firma platí víc
+
+  /* rozdíly pod 100 Kč vznikají jen zaokrouhlením hrubé na stovky — hlásíme shodu */
+  const netTxt = Math.abs(dNet) < 100
+    ? deltaBlock("Vaše čistá zůstane prakticky stejná", "±0 Kč", `${fmt(h.net)} místo ${fmt(authorNet)} měsíčně`, "ok")
+    : dNet < 0
+      ? deltaBlock("Vaše čistá klesne o", fmt(-dNet), `měsíčně · ${fmt(-dNet * 12)} ročně (${fmt(h.net)} místo ${fmt(authorNet)})`, "down")
+      : deltaBlock("Vaše čistá vzroste o", fmt(dNet), `měsíčně · ${fmt(dNet * 12)} ročně (${fmt(h.net)} místo ${fmt(authorNet)})`, "ok");
+
+  const costTxt = Math.abs(dCost) < 100
+    ? deltaBlock("Náklad firmy zůstane prakticky stejný", "±0 Kč", `${fmt(h.employer)} místo ${fmt(authorCost)} měsíčně`, "ok")
+    : dCost > 0
+      ? deltaBlock("Náklad firmy vzroste o", fmt(dCost), `měsíčně · ${fmt(dCost * 12)} ročně (${fmt(h.employer)} místo ${fmt(authorCost)})`, "up")
+      : deltaBlock("Náklad firmy klesne o", fmt(-dCost), `měsíčně · ${fmt(-dCost * 12)} ročně (${fmt(h.employer)} místo ${fmt(authorCost)})`, "ok");
+
+  $("verdict").innerHTML = netTxt + costTxt;
+
+  $("cards").innerHTML = `
+    <div class="card now">
+      <div class="badge">Dnes</div>
+      <h3>Autorský honorář</h3>
+      <div class="sub">${a.sub}</div>
+      <table>
+        ${a.rows}
+      </table>
+      <div class="net"><span>Čistý příjem</span><b>${fmt(authorNet)}</b></div>
+      <div class="cost"><span>Celkový náklad firmy</span><b>${fmt(authorCost)}</b></div>
+    </div>
+    <div class="card">
+      <div class="badge g">Nově</div>
+      <h3>HPP — hrubá ${fmt(gross)}</h3>
+      <div class="sub">zaměstnanecký poměr, 0 dětí, jen základní sleva na poplatníka</div>
+      <table>
+        <tr><td>Sociální poj. (7,1 %)</td><td>−${fmt(h.soc)}</td></tr>
+        <tr><td>Zdravotní poj. (4,5 %)</td><td>−${fmt(h.zdr)}</td></tr>
+        <tr><td>Záloha na daň po slevě</td><td>−${fmt(h.tax)}</td></tr>
+      </table>
+      <div class="net"><span>Čistá mzda</span><b>${fmt(h.net)}</b></div>
+      <div class="cost"><span>Náklad firmy (hrubá + 33,8 %)</span><b>${fmt(h.employer)}</b></div>
+    </div>`;
+
+  /* orientační body: stejná čistá / stejný náklad firmy */
+  const gSameNet = Math.round(grossForNet(authorNet) / 100) * 100;
+  const gSameCost = Math.round(authorCost / EMPLOYER_MULT / 100) * 100;
+  const sameNetH = hppMonth(Math.max(gSameNet, 0));
+  const sameCostH = hppMonth(Math.max(gSameCost, 0));
+
+  const bench = [];
+  bench.push([`Stejná čistá jako dnes (${fmt(authorNet)}) — potřebná hrubá; náklad firmy pak ${fmt(sameNetH.employer)}, tedy o ${fmt(sameNetH.employer - authorCost)} víc`,
+    fmt(gSameNet), gSameNet]);
+  bench.push([`Stejný náklad firmy jako dnes (${fmt(authorCost)}) — odpovídající hrubá; čistá pak ${fmt(sameCostH.net)}, tedy o ${fmt(authorNet - sameCostH.net)} míň než dnes`,
+    fmt(gSameCost), gSameCost]);
+
+  $("benchList").innerHTML = bench.map(([t, a, g], i) =>
+    `<li><span>${t}<button class="jump" data-g="${g}">→ nastavit posuvník</button></span><span class="amt">${a}</span></li>`).join("");
+  document.querySelectorAll("#benchList .jump").forEach(b =>
+    b.addEventListener("click", () => setGross(+b.dataset.g)));
+
+  $("pasmoNotice").hidden = taxMode !== "pausal" || fee * 12 <= 1000000;
+}
+
+$("fee").addEventListener("input", render);
+$("gross").addEventListener("input", render);
+document.querySelectorAll('input[name="taxMode"]').forEach(r => r.addEventListener("change", render));
+render();
+</script>
+
+</body>
+</html>
