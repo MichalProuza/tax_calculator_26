@@ -170,6 +170,20 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
   font:italic 12.5px Georgia,serif;color:var(--accent-ink);text-decoration:underline;
 }
 
+.penz-body{padding:16px 18px 18px;font-size:14px}
+.penz-body p{margin:0 0 10px}
+.penz-body table{width:100%;border-collapse:collapse;font-size:14px}
+.penz-body td{padding:6px 0;border-bottom:1px dotted var(--line)}
+.penz-body tr:last-child td{border-bottom:none}
+.penz-body td:last-child{text-align:right;font-family:"Courier New",Courier,monospace;font-weight:700;white-space:nowrap}
+.penz-body td .was{font-family:"Courier New",Courier,monospace;font-weight:400;font-size:12px;color:var(--ink-soft)}
+.penz-body .gain-line{
+  display:flex;justify-content:space-between;gap:10px;font-weight:700;
+  margin-top:10px;padding-top:10px;border-top:1.5px solid var(--ink);
+}
+.penz-body .gain-line b{font-family:"Courier New",Courier,monospace;white-space:nowrap;color:var(--good)}
+.penz-body .note{font-size:12.5px;color:var(--ink-soft);font-style:italic;margin:10px 0 0}
+
 .notice{
   border:1.5px solid var(--ink);border-radius:2px;background:var(--marker);
   padding:14px 18px;font-size:14px;transform:rotate(.4deg);box-shadow:var(--hard-shadow);
@@ -227,6 +241,11 @@ footer a{color:var(--accent-ink)}
       <ul id="benchList"></ul>
     </div>
 
+    <div class="sheet">
+      <h2><span class="no">odd. C</span>Stejný náklad, 50 000 Kč ročně do penzijka</h2>
+      <div class="penz-body" id="penzBody"></div>
+    </div>
+
     <div class="notice" id="pasmoNotice" hidden>
       <b>Pozor:</b> při odměně nad <b>83 333 Kč / měs.</b> (1 mil. Kč ročně) už autor s výdajovým paušálem 40 % do I. pásma paušální daně nespadá — srovnání se současným stavem by vycházelo z vyšší paušální platby.
     </div>
@@ -264,6 +283,8 @@ const EMP = {
   minWageMonth: 22400
 };
 const EMPLOYER_MULT = 1 + EMP.socEmployer + EMP.zdrEmployer;   // 1,338
+const PENZ_YEAR = 50000;                 // osvobozený příspěvek zaměstnavatele na penzijko / DIP, ročně
+const PENZ_MONTH = PENZ_YEAR / 12;       // 4 166,67 Kč
 
 const fmt = n => new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 }).format(Math.round(n)) + " Kč";
 
@@ -453,6 +474,29 @@ function render() {
     `<li><span>${t}<button class="jump" data-g="${g}">→ nastavit posuvník</button></span><span class="amt">${a}</span></li>`).join("");
   document.querySelectorAll("#benchList .jump").forEach(b =>
     b.addEventListener("click", () => setGross(+b.dataset.g)));
+
+  /* odd. C: stejný náklad firmy, ale 50 000 Kč / rok jde do penzijka —
+     hrubá se sníží tak, aby hrubá×1,338 + příspěvek = původní náklad;
+     příspěvek je do 50 000 Kč / rok osvobozen od daně i pojistného */
+  let gPenz = Math.floor(gross - PENZ_MONTH / EMPLOYER_MULT);
+  const penzClamped = gPenz < EMP.minWageMonth;
+  if (penzClamped) gPenz = EMP.minWageMonth;
+  const hp = hppMonth(gPenz);
+  const penzCost = hp.employer + Math.round(PENZ_MONTH);
+  const valueMonth = hp.net + PENZ_MONTH;
+  const gainMonth = valueMonth - h.net;
+  $("penzBody").innerHTML = penzClamped
+    ? `<p>Při zvolené hrubé mzdě ${fmt(gross)} nelze náklad udržet — snížená hrubá by klesla pod minimální mzdu ${fmt(EMP.minWageMonth)} / měs. Posuňte hrubou mzdu výš, varianta s penzijkem pak dává smysl.</p>`
+    : `<p>Firma platí stále ${fmt(h.employer)} / měs., ale ${fmt(PENZ_MONTH)} / měs. (${fmt(PENZ_YEAR)} / rok) pošle do penzijka či DIP místo mzdy. Z příspěvku se neplatí daň ani pojistné — na rozdíl od hrubé mzdy dorazí zaměstnanci celý:</p>
+    <table>
+      <tr><td>Hrubá mzda po snížení <span class="was">(místo ${fmt(gross)})</span></td><td>${fmt(gPenz)} / měs.</td></tr>
+      <tr><td>Čistá mzda <span class="was">(místo ${fmt(h.net)})</span></td><td>${fmt(hp.net)} / měs.</td></tr>
+      <tr><td>Příspěvek do penzijka / DIP</td><td>+${fmt(PENZ_MONTH)} / měs.</td></tr>
+      <tr><td>Čistá hodnota pro zaměstnance celkem</td><td>${fmt(valueMonth)} / měs.</td></tr>
+      <tr><td>Náklad firmy <span class="was">(beze změny)</span></td><td>${fmt(penzCost)} / měs.</td></tr>
+    </table>
+    <div class="gain-line"><span>Zaměstnanec získá navíc oproti čisté mzdě bez penzijka</span><b>+${fmt(gainMonth)} / měs. · ${fmt(gainMonth * 12)} / rok</b></div>
+    <div class="note">Příspěvek zaměstnavatele na penzijní spoření, DIP či životní pojištění je do úhrnu 50 000 Kč ročně osvobozen od daně z příjmů i pojistného (u firmy jde o daňový náklad bez odvodů 33,8 %). Peníze jsou ale vázané v produktu spoření na stáří — nejde o disponibilní hotovost.</div>`;
 
   $("pasmoNotice").hidden = taxMode !== "pausal" || fee * 12 <= 1000000;
 }
