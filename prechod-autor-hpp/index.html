@@ -101,6 +101,17 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 2px}
   padding-top:11px;margin-top:2px;font-style:italic;
 }
 
+.mode-toggle{display:flex;width:max-content;border:1.5px solid var(--line);margin-bottom:12px}
+.mode-toggle label{
+  position:relative;font-family:"Courier New",Courier,monospace;font-size:12.5px;
+  letter-spacing:.08em;text-transform:uppercase;padding:6px 15px;cursor:pointer;
+  color:var(--ink-soft);
+}
+.mode-toggle label:first-child{border-right:1.5px dotted var(--line)}
+.mode-toggle label:has(input:checked){background:var(--marker);color:var(--ink);font-weight:700}
+.mode-toggle input{position:absolute;opacity:0;pointer-events:none}
+.mode-toggle input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+
 /* výsledky */
 .results{display:flex;flex-direction:column;gap:20px}
 .verdict{
@@ -175,7 +186,7 @@ footer a{color:var(--accent-ink)}
 <header class="top">
   <div class="eyebrow">Tiskopis č. 2 / prototyp · sezóna <b>2026</b> · <a href="../">← zpět na kalkulačku OSVČ</a></div>
   <h1>Z autorské smlouvy <span class="u">na HPP</span></h1>
-  <p class="lede">Zadejte současnou měsíční autorskou odměnu zdaněnou paušální daní v I. pásmu a posuvníkem hledejte hrubou mzdu na HPP. Uvidíte, o kolik klesne váš čistý příjem a o kolik vzroste celkový náklad firmy oproti honoráři. Počítáno bez dětí, jen se základní slevou na poplatníka.</p>
+  <p class="lede">Zadejte současnou měsíční autorskou odměnu, zvolte její zdanění — paušální daň v I. pásmu, nebo výdajový paušál 40 % — a posuvníkem hledejte hrubou mzdu na HPP. Uvidíte, o kolik klesne váš čistý příjem a o kolik vzroste celkový náklad firmy oproti honoráři. Počítáno bez dětí, jen se základní slevou na poplatníka.</p>
 </header>
 
 <div class="grid">
@@ -184,9 +195,13 @@ footer a{color:var(--accent-ink)}
     <h2><span class="no">odd. A</span>Vstupy</h2>
     <div class="form-body">
       <div>
+        <div class="mode-toggle" role="radiogroup" aria-label="Zdanění honoráře">
+          <label><input type="radio" name="taxMode" value="pausal" checked><span>Paušální daň I.</span></label>
+          <label><input type="radio" name="taxMode" value="vp40"><span>Výd. paušál 40 %</span></label>
+        </div>
         <label class="fl" for="fee">Současná autorská odměna / měsíc</label>
         <input type="number" id="fee" min="0" step="1000" value="60000">
-        <div class="hint">Fakturovaná (hrubá) částka honoráře. Paušální daň I. pásma z ní ukrajuje pevných 9 162 Kč měsíčně.</div>
+        <div class="hint" id="feeHint">Fakturovaná (hrubá) částka honoráře. Paušální daň I. pásma z ní ukrajuje pevných 9 162 Kč měsíčně.</div>
       </div>
 
       <div>
@@ -197,7 +212,7 @@ footer a{color:var(--accent-ink)}
         <div class="hint">Minimum posuvníku = minimální mzda 22 400 Kč (plný úvazek nesmí být níž).</div>
       </div>
 
-      <div class="assump">Předpoklady: paušální daň v I. pásmu (9 162 Kč / měs. po červencové novele, příjmy do 1 mil. Kč ročně), 0 dětí, pouze základní sleva na poplatníka 2 570 Kč / měs., bez dalších slev a odpočtů. Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní. Zaměstnavatel: 24,8 % + 9 % (celkem 33,8 %). Náklad firmy na honorář = samotná fakturovaná částka.</div>
+      <div class="assump">Předpoklady: zdanění honoráře volitelně — paušální daň v I. pásmu (9 162 Kč / měs. po červencové novele, příjmy do 1 mil. Kč ročně), nebo výdajový paušál 40 % (daň 15 / 23 % po základní slevě, pojistné z min. vyměřovacích základů — zálohy nejméně 5 005 Kč soc. + 3 306 Kč zdr.). Vždy 0 dětí, pouze základní sleva na poplatníka, bez dalších slev a odpočtů. Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní. Zaměstnavatel: 24,8 % + 9 % (celkem 33,8 %). Náklad firmy na honorář = samotná fakturovaná částka.</div>
     </div>
   </section>
 
@@ -218,7 +233,7 @@ footer a{color:var(--accent-ink)}
 
     <footer>
       Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: honorář zdaněný paušální daní předpokládá aktivní paušální režim OSVČ (hlavní činnost, neplátce DPH, jediný druh příjmů); nezohledňuje benefity, stravenky, placenou dovolenou a nemocenskou na HPP — reálná hodnota HPP je tedy o něco vyšší, než ukazuje samotná čistá mzda. Záloha na daň zaměstnance: 15 % do 146 901 Kč / měs. (3× průměrná mzda 48 967 Kč), 23 % nad.<br>
-      Parametry 2026: paušální daň I. pásmo 9 162 Kč / měs. · minimální mzda 22 400 Kč / měs. · sleva na poplatníka 30 840 Kč / rok. Zdroje:
+      Parametry 2026: paušální daň I. pásmo 9 162 Kč / měs. · min. zálohy OSVČ 5 005 Kč soc. + 3 306 Kč zdr. · minimální mzda 22 400 Kč / měs. · sleva na poplatníka 30 840 Kč / rok · průměrná mzda 48 967 Kč. Zdroje:
       <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa</a> ·
       <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR</a>
     </footer>
@@ -233,8 +248,15 @@ const P = {
   avgWage: 48967,
   taxLow: .15, taxHigh: .23,
   taxThresholdMonth: 3 * 48967,     // 146 901 Kč — měsíční hranice 23% sazby
+  taxThresholdYear: 36 * 48967,     // roční hranice 23% sazby (OSVČ)
   slevaMonth: 2570,                 // sleva na poplatníka 30 840 / 12
-  pausalI: 9162                     // paušální daň I. pásmo, měsíčně
+  slevaYear: 30840,
+  pausalI: 9162,                    // paušální daň I. pásmo, měsíčně
+  socRate: .292, socShare: .55,
+  socMinYear: 17139 * 12,           // 35 % prům. mzdy
+  socMaxYear: 48 * 48967,
+  zdrRate: .135, zdrShare: .5,
+  zdrMinYear: 24483.5 * 12
 };
 const EMP = {
   socEmp: .071, zdrEmp: .045,       // zaměstnanec
@@ -271,10 +293,56 @@ function grossForNet(targetNet) {
   return hi;
 }
 
+/* ---------- OSVČ s výdajovým paušálem 40 % (roční výpočet, 0 dětí, jen základní sleva) ---------- */
+function vp40Year(incomeYear) {
+  const expenses = Math.min(incomeYear * .4, 2000000 * .4);   // strop paušálních výdajů 800 000 Kč
+  const profit = Math.max(0, incomeYear - expenses);
+  const base = Math.floor(profit / 100) * 100;
+  let tax = base <= P.taxThresholdYear
+    ? base * P.taxLow
+    : P.taxThresholdYear * P.taxLow + (base - P.taxThresholdYear) * P.taxHigh;
+  tax = Math.max(0, Math.round(tax) - P.slevaYear);
+  const socBase = Math.min(Math.max(profit * P.socShare, P.socMinYear), P.socMaxYear);
+  const soc = Math.ceil(socBase * P.socRate);
+  const zdrBase = Math.max(profit * P.zdrShare, P.zdrMinYear);
+  const zdr = Math.ceil(zdrBase * P.zdrRate);
+  return { tax, soc, zdr, total: tax + soc + zdr };
+}
+
+/* dnešní stav podle zvoleného zdanění honoráře */
+function authorCalc(fee, mode) {
+  if (mode === "pausal") {
+    return {
+      net: fee - P.pausalI,
+      sub: "OSVČ v paušálním režimu, I. pásmo — jediná měsíční platba, žádné přiznání",
+      rows: `<tr><td>Fakturovaná odměna</td><td>${fmt(fee)}</td></tr>
+        <tr><td>Paušální daň (I. pásmo)</td><td>−${fmt(P.pausalI)}</td></tr>`
+    };
+  }
+  const y = vp40Year(fee * 12);
+  return {
+    net: fee - y.total / 12,
+    sub: "OSVČ s výdajovým paušálem 40 % — daňové přiznání a přehledy, hodnoty = roční odvody / 12",
+    rows: `<tr><td>Fakturovaná odměna</td><td>${fmt(fee)}</td></tr>
+      <tr><td>Daň z příjmů</td><td>−${fmt(y.tax / 12)}</td></tr>
+      <tr><td>Sociální poj.</td><td>−${fmt(y.soc / 12)}</td></tr>
+      <tr><td>Zdravotní poj.</td><td>−${fmt(y.zdr / 12)}</td></tr>`
+  };
+}
+
+const FEE_HINTS = {
+  pausal: "Fakturovaná (hrubá) částka honoráře. Paušální daň I. pásma z ní ukrajuje pevných 9 162 Kč měsíčně.",
+  vp40: "Fakturovaná (hrubá) částka honoráře. Daň a pojistné počítáme ročně z 60 % příjmů (výdajový paušál 40 %) a přepočítáváme na měsíc."
+};
+
 const $ = id => document.getElementById(id);
 
 function readFee() {
   return Math.max(0, +$("fee").value || 0);
+}
+
+function readTaxMode() {
+  return document.querySelector('input[name="taxMode"]:checked').value;
 }
 
 function setGross(v) {
@@ -294,12 +362,15 @@ function deltaBlock(label, value, sub, cls) {
 function render() {
   const fee = readFee();
   const gross = +$("gross").value;
+  const taxMode = readTaxMode();
 
   $("grossVal").textContent = fmt(gross) + " / měsíc";
   $("grossAlt").textContent = "= " + fmt(gross * 12) + " / rok";
+  $("feeHint").textContent = FEE_HINTS[taxMode];
 
-  /* dnes: autorský honorář v paušálním režimu */
-  const authorNet = fee - P.pausalI;      // čistý příjem autora
+  /* dnes: autorský honorář podle zvoleného zdanění */
+  const a = authorCalc(fee, taxMode);
+  const authorNet = a.net;                // čistý příjem autora
   const authorCost = fee;                 // celkový náklad firmy
 
   /* nově: HPP */
@@ -327,10 +398,9 @@ function render() {
     <div class="card now">
       <div class="badge">Dnes</div>
       <h3>Autorský honorář</h3>
-      <div class="sub">OSVČ v paušálním režimu, I. pásmo — jediná měsíční platba, žádné přiznání</div>
+      <div class="sub">${a.sub}</div>
       <table>
-        <tr><td>Fakturovaná odměna</td><td>${fmt(fee)}</td></tr>
-        <tr><td>Paušální daň (I. pásmo)</td><td>−${fmt(P.pausalI)}</td></tr>
+        ${a.rows}
       </table>
       <div class="net"><span>Čistý příjem</span><b>${fmt(authorNet)}</b></div>
       <div class="cost"><span>Celkový náklad firmy</span><b>${fmt(authorCost)}</b></div>
@@ -365,11 +435,12 @@ function render() {
   document.querySelectorAll("#benchList .jump").forEach(b =>
     b.addEventListener("click", () => setGross(+b.dataset.g)));
 
-  $("pasmoNotice").hidden = fee * 12 <= 1000000;
+  $("pasmoNotice").hidden = taxMode !== "pausal" || fee * 12 <= 1000000;
 }
 
 $("fee").addEventListener("input", render);
 $("gross").addEventListener("input", render);
+document.querySelectorAll('input[name="taxMode"]').forEach(r => r.addEventListener("change", render));
 render();
 </script>
 
