@@ -200,7 +200,7 @@ footer a{color:var(--accent-ink)}
 <header class="top">
   <div class="eyebrow">Tiskopis č. 2 / prototyp · sezóna <b>2026</b> · <a href="../">← zpět na kalkulačku OSVČ</a></div>
   <h1>Z autorské smlouvy <span class="u">na HPP</span></h1>
-  <p class="lede">Zadejte současnou měsíční autorskou odměnu, zvolte její zdanění — paušální daň v I. pásmu, nebo výdajový paušál 40 % — a posuvníkem hledejte hrubou mzdu na HPP. Uvidíte, o kolik klesne váš čistý příjem a o kolik vzroste celkový náklad firmy oproti honoráři. Počítáno bez dětí, jen se základní slevou na poplatníka.</p>
+  <p class="lede">Zadejte současnou měsíční autorskou odměnu, zvolte její zdanění — paušální daň v I. pásmu, nebo výdajový paušál 40 % — a posuvníkem hledejte hrubou mzdu na HPP. Uvidíte, o kolik klesne váš čistý příjem a o kolik vzroste celkový náklad firmy oproti honoráři. Volitelně i s daňovým zvýhodněním na děti, jinak jen se základní slevou na poplatníka.</p>
 </header>
 
 <div class="grid">
@@ -219,6 +219,12 @@ footer a{color:var(--accent-ink)}
       </div>
 
       <div>
+        <label class="fl" for="children">Počet dětí</label>
+        <input type="number" id="children" min="0" max="8" step="1" value="0">
+        <div class="hint">Zvýhodnění 15 204 / 22 320 / 27 840 Kč ročně (1., 2., 3.+ dítě) uplatníte na HPP i u výdajového paušálu — v paušálním režimu ho uplatnit nelze.</div>
+      </div>
+
+      <div>
         <label class="fl" for="gross">Hrubá mzda na HPP</label>
         <div class="range-val" id="grossVal">45 000 Kč / měsíc</div>
         <div class="range-alt" id="grossAlt">= 540 000 Kč / rok</div>
@@ -226,7 +232,7 @@ footer a{color:var(--accent-ink)}
         <div class="hint">Minimum posuvníku = minimální mzda 22 400 Kč (plný úvazek nesmí být níž).</div>
       </div>
 
-      <div class="assump">Předpoklady: zdanění honoráře volitelně — paušální daň v I. pásmu (9 162 Kč / měs. po červencové novele, příjmy do 1 mil. Kč ročně), nebo výdajový paušál 40 % (daň 15 / 23 % po základní slevě, pojistné z min. vyměřovacích základů — zálohy nejméně 5 005 Kč soc. + 3 306 Kč zdr.). Vždy 0 dětí, pouze základní sleva na poplatníka, bez dalších slev a odpočtů. Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní. Zaměstnavatel: 24,8 % + 9 % (celkem 33,8 %). Náklad firmy na honorář = samotná fakturovaná částka.</div>
+      <div class="assump">Předpoklady: zdanění honoráře volitelně — paušální daň v I. pásmu (9 162 Kč / měs. po červencové novele, příjmy do 1 mil. Kč ročně), nebo výdajový paušál 40 % (daň 15 / 23 % po základní slevě, pojistné z min. vyměřovacích základů — zálohy nejméně 5 005 Kč soc. + 3 306 Kč zdr.). Daňové zvýhodnění na děti se uplatní na HPP i u výdajového paušálu (včetně daňového bonusu), v paušálním režimu nikoliv; jinak pouze základní sleva na poplatníka, bez dalších slev a odpočtů. Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní. Zaměstnavatel: 24,8 % + 9 % (celkem 33,8 %). Náklad firmy na honorář = samotná fakturovaná částka.</div>
     </div>
   </section>
 
@@ -251,7 +257,7 @@ footer a{color:var(--accent-ink)}
     </div>
 
     <footer>
-      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: honorář zdaněný paušální daní předpokládá aktivní paušální režim OSVČ (hlavní činnost, neplátce DPH, jediný druh příjmů); nezohledňuje benefity, stravenky, placenou dovolenou a nemocenskou na HPP — reálná hodnota HPP je tedy o něco vyšší, než ukazuje samotná čistá mzda. Záloha na daň zaměstnance: 15 % do 146 901 Kč / měs. (3× průměrná mzda 48 967 Kč), 23 % nad.<br>
+      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: honorář zdaněný paušální daní předpokládá aktivní paušální režim OSVČ (hlavní činnost, neplátce DPH, jediný druh příjmů); daňový bonus na děti počítáme bez podmínky minimálního příjmu (na HPP je při mzdě nad polovinou minimální mzdy splněna vždy); nezohledňuje benefity, stravenky, placenou dovolenou a nemocenskou na HPP — reálná hodnota HPP je tedy o něco vyšší, než ukazuje samotná čistá mzda. Záloha na daň zaměstnance: 15 % do 146 901 Kč / měs. (3× průměrná mzda 48 967 Kč), 23 % nad.<br>
       Parametry 2026: paušální daň I. pásmo 9 162 Kč / měs. · min. zálohy OSVČ 5 005 Kč soc. + 3 306 Kč zdr. · minimální mzda 22 400 Kč / měs. · sleva na poplatníka 30 840 Kč / rok · průměrná mzda 48 967 Kč. Zdroje:
       <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa</a> ·
       <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR</a>
@@ -271,6 +277,7 @@ const P = {
   slevaMonth: 2570,                 // sleva na poplatníka 30 840 / 12
   slevaYear: 30840,
   pausalI: 9162,                    // paušální daň I. pásmo, měsíčně
+  childCredits: [15204, 22320, 27840],   // zvýhodnění ročně: 1., 2., 3.+ dítě
   socRate: .292, socShare: .55,
   socMinYear: 17139 * 12,           // 35 % prům. mzdy
   socMaxYear: 48 * 48967,
@@ -288,15 +295,22 @@ const PENZ_MONTH = PENZ_YEAR / 12;       // 4 166,67 Kč
 
 const fmt = n => new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 }).format(Math.round(n)) + " Kč";
 
-/* ---------- měsíční mzdové kalkulace HPP (0 dětí, jen základní sleva) ---------- */
-function hppMonth(gross) {
+/* daňové zvýhodnění na děti, ročně (1., 2., 3.+) */
+function childCreditYear(n) {
+  let s = 0;
+  for (let i = 0; i < n; i++) s += P.childCredits[Math.min(i, 2)];
+  return s;
+}
+
+/* ---------- měsíční mzdové kalkulace HPP (základní sleva + zvýhodnění na děti) ---------- */
+function hppMonth(gross, kids) {
   const soc = Math.round(gross * EMP.socEmp);
   const zdr = Math.round(gross * EMP.zdrEmp);
   const base = Math.ceil(gross / 100) * 100;                   // základ zaokrouhlený na stovky nahoru
   let tax = base <= P.taxThresholdMonth
     ? base * P.taxLow
     : P.taxThresholdMonth * P.taxLow + (base - P.taxThresholdMonth) * P.taxHigh;
-  tax = Math.max(0, Math.round(tax) - P.slevaMonth);
+  tax = Math.max(0, Math.round(tax) - P.slevaMonth) - childCreditYear(kids) / 12;   // záporná = daňový bonus
   return {
     gross, soc, zdr, tax,
     net: gross - soc - zdr - tax,
@@ -305,11 +319,11 @@ function hppMonth(gross) {
 }
 
 /* hrubá mzda pro cílovou čistou — binární půlení (čistá roste monotónně) */
-function grossForNet(targetNet) {
+function grossForNet(targetNet, kids) {
   let lo = 0, hi = 3000000;
   for (let i = 0; i < 50; i++) {
     const mid = (lo + hi) / 2;
-    if (hppMonth(mid).net < targetNet) lo = mid; else hi = mid;
+    if (hppMonth(mid, kids).net < targetNet) lo = mid; else hi = mid;
   }
   return hi;
 }
@@ -317,26 +331,26 @@ function grossForNet(targetNet) {
 /* hrubá mzda, při níž pokles čisté = nárůst nákladu firmy:
    authorNet − net(g) = employer(g) − authorCost
    ⇔ net(g) + employer(g) = authorNet + authorCost (levá strana roste monotónně) */
-function grossForFairSplit(authorNet, authorCost) {
+function grossForFairSplit(authorNet, authorCost, kids) {
   const target = authorNet + authorCost;
   let lo = 0, hi = 3000000;
   for (let i = 0; i < 50; i++) {
     const mid = (lo + hi) / 2;
-    const h = hppMonth(mid);
+    const h = hppMonth(mid, kids);
     if (h.net + h.employer < target) lo = mid; else hi = mid;
   }
   return hi;
 }
 
-/* ---------- OSVČ s výdajovým paušálem 40 % (roční výpočet, 0 dětí, jen základní sleva) ---------- */
-function vp40Year(incomeYear) {
+/* ---------- OSVČ s výdajovým paušálem 40 % (roční výpočet, základní sleva + zvýhodnění na děti) ---------- */
+function vp40Year(incomeYear, kids) {
   const expenses = Math.min(incomeYear * .4, 2000000 * .4);   // strop paušálních výdajů 800 000 Kč
   const profit = Math.max(0, incomeYear - expenses);
   const base = Math.floor(profit / 100) * 100;
   let tax = base <= P.taxThresholdYear
     ? base * P.taxLow
     : P.taxThresholdYear * P.taxLow + (base - P.taxThresholdYear) * P.taxHigh;
-  tax = Math.max(0, Math.round(tax) - P.slevaYear);
+  tax = Math.max(0, Math.round(tax) - P.slevaYear) - childCreditYear(kids);   // záporná = daňový bonus
   const socBase = Math.min(Math.max(profit * P.socShare, P.socMinYear), P.socMaxYear);
   const soc = Math.ceil(socBase * P.socRate);
   const zdrBase = Math.max(profit * P.zdrShare, P.zdrMinYear);
@@ -344,24 +358,33 @@ function vp40Year(incomeYear) {
   return { tax, soc, zdr, total: tax + soc + zdr };
 }
 
+/* řádek daně: záporná hodnota = daňový bonus (vyplácí se) */
+function taxRow(taxMonth) {
+  return taxMonth < 0
+    ? `<tr><td>Daňový bonus na děti</td><td>+${fmt(-taxMonth)}</td></tr>`
+    : `<tr><td>Daň z příjmů</td><td>−${fmt(taxMonth)}</td></tr>`;
+}
+
 /* dnešní stav podle zvoleného zdanění honoráře */
-function authorCalc(fee, mode) {
+function authorCalc(fee, mode, kids) {
   if (mode === "pausal") {
     return {
       net: fee - P.pausalI,
       sub: "OSVČ v paušálním režimu, I. pásmo — jediná měsíční platba, žádné přiznání",
       rows: `<tr><td>Fakturovaná odměna</td><td>${fmt(fee)}</td></tr>
-        <tr><td>Paušální daň (I. pásmo)</td><td>−${fmt(P.pausalI)}</td></tr>`
+        <tr><td>Paušální daň (I. pásmo)</td><td>−${fmt(P.pausalI)}</td></tr>`,
+      note: kids > 0 ? `V paušálním režimu nelze uplatnit zvýhodnění na děti — přicházíte o ${fmt(childCreditYear(kids) / 12)} / měs. (${fmt(childCreditYear(kids))} / rok), o které je HPP naopak výhodnější.` : ""
     };
   }
-  const y = vp40Year(fee * 12);
+  const y = vp40Year(fee * 12, kids);
   return {
     net: fee - y.total / 12,
     sub: "OSVČ s výdajovým paušálem 40 % — daňové přiznání a přehledy, hodnoty = roční odvody / 12",
     rows: `<tr><td>Fakturovaná odměna</td><td>${fmt(fee)}</td></tr>
-      <tr><td>Daň z příjmů</td><td>−${fmt(y.tax / 12)}</td></tr>
+      ${taxRow(y.tax / 12)}
       <tr><td>Sociální poj.</td><td>−${fmt(y.soc / 12)}</td></tr>
-      <tr><td>Zdravotní poj.</td><td>−${fmt(y.zdr / 12)}</td></tr>`
+      <tr><td>Zdravotní poj.</td><td>−${fmt(y.zdr / 12)}</td></tr>`,
+    note: ""
   };
 }
 
@@ -378,6 +401,10 @@ function readFee() {
 
 function readTaxMode() {
   return document.querySelector('input[name="taxMode"]:checked').value;
+}
+
+function readKids() {
+  return Math.max(0, Math.min(8, Math.round(+$("children").value || 0)));
 }
 
 function setGross(v) {
@@ -398,18 +425,19 @@ function render() {
   const fee = readFee();
   const gross = +$("gross").value;
   const taxMode = readTaxMode();
+  const kids = readKids();
 
   $("grossVal").textContent = fmt(gross) + " / měsíc";
   $("grossAlt").textContent = "= " + fmt(gross * 12) + " / rok";
   $("feeHint").textContent = FEE_HINTS[taxMode];
 
   /* dnes: autorský honorář podle zvoleného zdanění */
-  const a = authorCalc(fee, taxMode);
+  const a = authorCalc(fee, taxMode, kids);
   const authorNet = a.net;                // čistý příjem autora
   const authorCost = fee;                 // celkový náklad firmy
 
   /* nově: HPP */
-  const h = hppMonth(gross);
+  const h = hppMonth(gross, kids);
 
   const dNet = h.net - authorNet;         // záporné = čistá klesne
   const dCost = h.employer - authorCost;  // kladné = firma platí víc
@@ -439,27 +467,28 @@ function render() {
       </table>
       <div class="net"><span>Čistý příjem</span><b>${fmt(authorNet)}</b></div>
       <div class="cost"><span>Celkový náklad firmy</span><b>${fmt(authorCost)}</b></div>
+      ${a.note ? `<div class="hint">${a.note}</div>` : ""}
     </div>
     <div class="card">
       <div class="badge g">Nově</div>
       <h3>HPP — hrubá ${fmt(gross)}</h3>
-      <div class="sub">zaměstnanecký poměr, 0 dětí, jen základní sleva na poplatníka</div>
+      <div class="sub">zaměstnanecký poměr, ${kids ? `zvýhodnění na ${kids} ${kids === 1 ? "dítě" : kids < 5 ? "děti" : "dětí"} + ` : ""}základní sleva na poplatníka</div>
       <table>
         <tr><td>Sociální poj. (7,1 %)</td><td>−${fmt(h.soc)}</td></tr>
         <tr><td>Zdravotní poj. (4,5 %)</td><td>−${fmt(h.zdr)}</td></tr>
-        <tr><td>Záloha na daň po slevě</td><td>−${fmt(h.tax)}</td></tr>
+        ${taxRow(h.tax)}
       </table>
       <div class="net"><span>Čistá mzda</span><b>${fmt(h.net)}</b></div>
       <div class="cost"><span>Náklad firmy (hrubá + 33,8 %)</span><b>${fmt(h.employer)}</b></div>
     </div>`;
 
   /* orientační body: stejná čistá / férový střed / stejný náklad firmy */
-  const gSameNet = Math.round(grossForNet(authorNet) / 100) * 100;
+  const gSameNet = Math.round(grossForNet(authorNet, kids) / 100) * 100;
   const gSameCost = Math.round(authorCost / EMPLOYER_MULT / 100) * 100;
-  const gFair = Math.round(grossForFairSplit(authorNet, authorCost) / 100) * 100;
-  const sameNetH = hppMonth(Math.max(gSameNet, 0));
-  const sameCostH = hppMonth(Math.max(gSameCost, 0));
-  const fairH = hppMonth(Math.max(gFair, 0));
+  const gFair = Math.round(grossForFairSplit(authorNet, authorCost, kids) / 100) * 100;
+  const sameNetH = hppMonth(Math.max(gSameNet, 0), kids);
+  const sameCostH = hppMonth(Math.max(gSameCost, 0), kids);
+  const fairH = hppMonth(Math.max(gFair, 0), kids);
   const fairShare = Math.round(((authorNet - fairH.net) + (fairH.employer - authorCost)) / 2);
 
   const bench = [];
@@ -481,7 +510,7 @@ function render() {
   let gPenz = Math.floor(gross - PENZ_MONTH / EMPLOYER_MULT);
   const penzClamped = gPenz < EMP.minWageMonth;
   if (penzClamped) gPenz = EMP.minWageMonth;
-  const hp = hppMonth(gPenz);
+  const hp = hppMonth(gPenz, kids);
   const penzCost = hp.employer + Math.round(PENZ_MONTH);
   const valueMonth = hp.net + PENZ_MONTH;
   const gainMonth = valueMonth - h.net;
@@ -503,6 +532,7 @@ function render() {
 
 $("fee").addEventListener("input", render);
 $("gross").addEventListener("input", render);
+$("children").addEventListener("input", render);
 document.querySelectorAll('input[name="taxMode"]').forEach(r => r.addEventListener("change", render));
 render();
 </script>
