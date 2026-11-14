@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Paušální daň, nebo výdajový paušál? · Kalkulačka OSVČ 2026</title>
+<title>Paušální daň, nebo výdajový paušál? · Kalkulačka OSVČ 2026 a 2027</title>
 <style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style>
 <style>
 /*
@@ -81,7 +81,7 @@ h1 .u{
 }
 .sheet h2 .no{color:var(--ink-soft);margin-right:8px}
 .form-body{padding:18px;display:flex;flex-direction:column;gap:20px}
-label.fl{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.fl{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
 .hint{font-size:12.5px;color:var(--ink-soft);margin-top:5px;font-style:italic}
 input[type=number]{
   width:100%;padding:7px 2px;border:none;border-bottom:1.5px dotted var(--line);
@@ -232,7 +232,7 @@ footer a{color:var(--accent-ink)}
 
 <div class="wrap">
 <header class="top">
-  <div class="eyebrow">Tiskopis č. 1 / prototyp v3 · sezóna <b>2026</b> · po červencové novele · <a href="prechod-autor-hpp/" style="color:var(--accent-ink)">přechod z autorské smlouvy na HPP →</a></div>
+  <div class="eyebrow">Tiskopis č. 1 / prototyp v3 · sezóna <b id="yearLbl">2026</b> · <a href="prechod-autor-hpp/" style="color:var(--accent-ink)">přechod z autorské smlouvy na HPP →</a></div>
   <h1>Paušální daň, nebo <span class="u">výdajový paušál</span>?</h1>
   <p class="lede">Zadejte příjem měsíčně nebo ročně a porovnejte profily 60 % a 40 % zároveň — v obou uvidíte paušální daň i výdajový paušál, včetně slev a odpočtů, o které v paušálním režimu přicházíte.</p>
 </header>
@@ -242,6 +242,15 @@ footer a{color:var(--accent-ink)}
   <section class="sheet" aria-label="Vstupní údaje">
     <h2><span class="no">odd. A</span>Vaše situace</h2>
     <div class="form-body">
+      <div>
+        <div class="fl" id="yearFl">Zdaňovací období</div>
+        <div class="mode-toggle" role="radiogroup" aria-labelledby="yearFl" style="margin-bottom:0">
+          <label><input type="radio" name="taxYear" value="2026" checked>2026</label>
+          <label><input type="radio" name="taxYear" value="2027">2027</label>
+        </div>
+        <div class="hint" id="yearHint"></div>
+      </div>
+
       <div>
         <div class="mode-toggle" role="radiogroup" aria-label="Jednotka příjmu">
           <label><input type="radio" name="incomeMode" value="year">Ročně</label>
@@ -280,7 +289,7 @@ footer a{color:var(--accent-ink)}
         </div>
       </div>
 
-      <div class="assump">Předpoklady prototypu: hlavní činnost po celý rok, neplátce DPH, jediný druh příjmů, bez zaměstnání. Srovnáváme profily 60 % (řemeslné a ostatní živnosti) a 40 % (svobodná povolání, autoři) souběžně — 80% profil lze doplnit stejným způsobem. Parametry roku 2026 po novele účinné zpětně od ledna.</div>
+      <div class="assump">Předpoklady prototypu: hlavní činnost po celý rok, neplátce DPH, jediný druh příjmů, bez zaměstnání. Srovnáváme profily 60 % (řemeslné a ostatní živnosti) a 40 % (svobodná povolání, autoři) souběžně — 80% profil lze doplnit stejným způsobem. <span id="assumpYear"></span></div>
     </div>
   </section>
 
@@ -299,9 +308,7 @@ footer a{color:var(--accent-ink)}
       <div class="hpp-body" id="hppBody"></div>
     </div>
 
-    <div class="notice" id="julyNotice" hidden>
-      <b>Pozor — červenec 2026:</b> záloha v I. pásmu se novelou zpětně snížila z 9 984 Kč na <b>9 162 Kč</b>. Za leden–červen vám vznikl přeplatek <b>4 932 Kč</b> — červencovou platbu proto stačí poslat ve výši <b>4 230 Kč</b>, jinak o přeplatek žádáte až po konci roku.
-    </div>
+    <div class="notice" id="yearNotice" hidden></div>
 
     <div class="share-box">
       <h2>Sdílet tuto částku</h2>
@@ -326,11 +333,13 @@ footer a{color:var(--accent-ink)}
     </div>
 
     <footer>
-      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: nezohledňuje minimální mzdu pro daňový bonus, vedlejší činnost, souběh se zaměstnáním ani slevy na invaliditu. HPP ekvivalent: zaměstnanec 7,1 % soc. + 4,5 % zdr., zaměstnavatel 24,8 % + 9 %, hrubá mzda nejméně ve výši minimální mzdy 22 400 Kč / měs., bez benefitů a náhrad.<br>
-      Parametry 2026: paušální daň 9 162 / 16 745 / 27 139 Kč měs. · min. zálohy 5 005 Kč soc. + 3 306 Kč zdr. · průměrná mzda 48 967 Kč. Zdroje:
-      <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa</a> ·
-      <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR</a> ·
-      <a href="https://www.pruvodcepodnikanim.cz/clanek/minimalni-zalohy-osvc-2026/">ČSOB Průvodce podnikáním</a>
+      Prototyp — orientační výpočet, nejde o daňové poradenství. Zjednodušení: nezohledňuje vedlejší činnost, souběh se zaměstnáním ani slevy na invaliditu; daňový bonus na děti se vyplácí jen při příjmech aspoň ve výši šestinásobku minimální mzdy. HPP ekvivalent: zaměstnanec 7,1 % soc. + 4,5 % zdr., zaměstnavatel 24,8 % + 9 %, sociální pojistné jen do maximálního vyměřovacího základu (48násobek průměrné mzdy), hrubá mzda nejméně ve výši minimální mzdy, bez benefitů a náhrad.<br>
+      <span id="footParams"></span> Zdroje:
+      <a href="https://financnisprava.gov.cz/cs/financni-sprava/media-a-verejnost/tiskove-zpravy-gfr/tiskove-zpravy-2026/poplatnikum-v-prvnim-pasmu-pausalniho-rezimu-snizeni-zalohy">Finanční správa (záloha 2026)</a> ·
+      <a href="https://mf.gov.cz/cs/ministerstvo/media/tiskove-zpravy/2026/minimalni-zalohy-na-socialni-odvody-osvc-pro-rok-2-64112">MF ČR (zálohy 2026)</a> ·
+      <a href="https://www.pruvodcepodnikanim.cz/clanek/minimalni-zalohy-osvc-2026/">ČSOB Průvodce podnikáním</a> ·
+      <a href="https://www.investujeme.cz/clanky/dane-v-roce-2027-zivnostnikum-vzrostou-zalohy-posune-se-hranice-vyssiho-zdaneni/">Investujeme.cz (parametry 2027)</a> ·
+      <a href="https://www.pocitamzdy.cz/zmeny27.html">PočítáMzdy.cz (mzdy 2027)</a>
     </footer>
   </section>
 </div>
@@ -338,45 +347,72 @@ footer a{color:var(--accent-ink)}
 
 <script>
 "use strict";
-/* ---------- parametry 2026 (po novele, zpětně od ledna) ---------- */
-const P = {
-  avgWage: 48967,
-  taxLow: .15, taxHigh: .23,
-  taxThreshold: 36 * 48967,                        // roční hranice 23% sazby
-  slevaPoplatnik: 30840,
-  slevaManzel: 24840,
-  childCredits: [15204, 22320, 27840],              // 1., 2., 3.+ dítě
-  socRate: .292, socShare: .55,
-  socMinYear: 17139 * 12,                           // 35 % prům. mzdy
-  socMaxYear: 48 * 48967,
-  zdrRate: .135, zdrShare: .5,
-  zdrMinYear: 24483.5 * 12,
-  mortgageCap: 150000, pensionCap: 48000,
-  pausal: { 1: 9162, 2: 16745, 3: 27139 }           // měsíční částky pásem
+/* ---------- parametry podle zdaňovacího období ----------
+   2026: po novele účinné zpětně od ledna (min. vyměřovací základ OSVČ 35 % průměrné mzdy)
+   2027: průměrná mzda dle nařízení vlády č. 177/2026 Sb., minimální mzda 24 900 Kč;
+         slevy, zvýhodnění na děti, sazby a limity odpočtů se proti 2026 nemění */
+const YEARS = {
+  2026: { avgWage: 48967, minWage: 22400, pausal: { 1: 9162, 2: 16745, 3: 27139 } },
+  2027: { avgWage: 51663, minWage: 24900, pausal: { 1: 9662, 2: 16745, 3: 27139 } }
 };
+
+function buildParams(year) {
+  const y = YEARS[year];
+  const socMinBase = Math.ceil(y.avgWage * .35);    // měsíční min. vyměřovací základ, hlavní činnost
+  const zdrMinBase = y.avgWage / 2;
+  return {
+    year, avgWage: y.avgWage, minWage: y.minWage,
+    taxLow: .15, taxHigh: .23,
+    taxThreshold: 36 * y.avgWage,                   // roční hranice 23% sazby
+    slevaPoplatnik: 30840,
+    slevaManzel: 24840,
+    childCredits: [15204, 22320, 27840],            // 1., 2., 3.+ dítě
+    bonusMinIncome: 6 * y.minWage,                  // min. příjem pro výplatu daňového bonusu
+    socRate: .292, socShare: .55,
+    socMinYear: socMinBase * 12,
+    socMaxYear: 48 * y.avgWage,                     // max. vyměřovací základ (OSVČ i zaměstnanec)
+    socMinAdvance: Math.ceil(socMinBase * .292),
+    zdrRate: .135, zdrShare: .5,
+    zdrMinYear: zdrMinBase * 12,
+    zdrMinAdvance: Math.ceil(zdrMinBase * .135),
+    mortgageCap: 150000, pensionCap: 48000,
+    pausal: y.pausal                                // měsíční částky pásem
+  };
+}
+let P = buildParams(2026);
 
 const fmt = n => new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 }).format(Math.round(n)) + " Kč";
 
-/* ---------- zaměstnanec (HPP) 2026 ---------- */
+/* daň ze základu zaokrouhleného na stovky dolů; daň se zaokrouhluje na koruny nahoru */
+function incomeTax(base) {
+  const t = base <= P.taxThreshold
+    ? base * P.taxLow
+    : P.taxThreshold * P.taxLow + (base - P.taxThreshold) * P.taxHigh;
+  return Math.ceil(t - 1e-6);
+}
+
+/* daň po slevách a zvýhodnění na děti; záporná hodnota = daňový bonus,
+   který náleží jen při příjmech aspoň 6× minimální mzda */
+function taxAfterCredits(base, o, bonusIncome) {
+  const tax = Math.max(0, incomeTax(base) - P.slevaPoplatnik - (o.spouse ? P.slevaManzel : 0));
+  const dan = tax - childCreditTotal(o.children);
+  return dan < 0 && bonusIncome < P.bonusMinIncome ? 0 : dan;
+}
+
+/* ---------- zaměstnanec (HPP) ---------- */
 const EMP = {
   socEmp: .071,        // 6,5 % důchodové + 0,6 % nemocenské
   zdrEmp: .045,
   socEmployer: .248,
-  zdrEmployer: .09,
-  minWageMonth: 22400  // minimální mzda 2026 (sdělení č. 356/2025 Sb.)
+  zdrEmployer: .09
 };
 
 function employeeNetYear(grossYear, o) {
-  const soc = Math.round(grossYear * EMP.socEmp);
+  const soc = Math.round(Math.min(grossYear, P.socMaxYear) * EMP.socEmp);
   const zdr = Math.round(grossYear * EMP.zdrEmp);
   let base = Math.max(0, grossYear - Math.min(o.mortgage, P.mortgageCap) - Math.min(o.pension, P.pensionCap));
   base = Math.floor(base / 100) * 100;
-  let tax = base <= P.taxThreshold
-    ? base * P.taxLow
-    : P.taxThreshold * P.taxLow + (base - P.taxThreshold) * P.taxHigh;
-  tax = Math.max(0, Math.round(tax) - P.slevaPoplatnik - (o.spouse ? P.slevaManzel : 0));
-  const dan = tax - childCreditTotal(o.children);
-  return grossYear - soc - zdr - dan;
+  return grossYear - soc - zdr - taxAfterCredits(base, o, grossYear);
 }
 
 /* hrubá roční mzda pro cílový čistý příjem — binární půlení
@@ -394,12 +430,14 @@ function grossForNet(targetNet, o) {
 function computeHpp(incomeAnnual, best, o) {
   const targetNet = incomeAnnual - best.total;
   let grossMonth = Math.ceil(grossForNet(targetNet, o) / 12 / 100) * 100;
-  const clamped = grossMonth < EMP.minWageMonth;   // plný úvazek nejde pod minimální mzdu
-  if (clamped) grossMonth = EMP.minWageMonth;
+  const clamped = grossMonth < P.minWage;   // plný úvazek nejde pod minimální mzdu
+  if (clamped) grossMonth = P.minWage;
   const grossYear = grossMonth * 12;
-  const employerYear = Math.round(grossYear * (1 + EMP.socEmployer + EMP.zdrEmployer));
+  const employerYear = Math.round(grossYear
+    + Math.min(grossYear, P.socMaxYear) * EMP.socEmployer + grossYear * EMP.zdrEmployer);
   return {
     targetNet, grossMonth, grossYear, clamped,
+    overCap: grossYear > P.socMaxYear,
     netAtGross: employeeNetYear(grossYear, o),
     employerMonth: Math.round(employerYear / 12), employerYear,
     diff: employerYear - incomeAnnual
@@ -417,11 +455,7 @@ function computeStandard(income, expenses, o) {
   const profit = Math.max(0, income - expenses);
   let base = Math.max(0, profit - Math.min(o.mortgage, P.mortgageCap) - Math.min(o.pension, P.pensionCap));
   base = Math.floor(base / 100) * 100;
-  let tax = base <= P.taxThreshold
-    ? base * P.taxLow
-    : P.taxThreshold * P.taxLow + (base - P.taxThreshold) * P.taxHigh;
-  tax = Math.max(0, Math.round(tax) - P.slevaPoplatnik - (o.spouse ? P.slevaManzel : 0));
-  const dan = tax - childCreditTotal(o.children);   // záporná hodnota = daňový bonus
+  const dan = taxAfterCredits(base, o, income);     // záporná hodnota = daňový bonus
   const socBase = Math.min(Math.max(profit * P.socShare, P.socMinYear), P.socMaxYear);
   const soc = Math.ceil(socBase * P.socRate);
   const zdrBase = Math.max(profit * P.zdrShare, P.zdrMinYear);
@@ -469,6 +503,32 @@ function rowTable(r) {
 }
 
 const $ = id => document.getElementById(id);
+
+/* ---------- přepínač zdaňovacího období ---------- */
+function paramsLine() {
+  return `Parametry ${P.year}: paušální daň ${fmt(P.pausal[1])} / ${fmt(P.pausal[2])} / ${fmt(P.pausal[3])} měsíčně · min. zálohy ${fmt(P.socMinAdvance)} sociální + ${fmt(P.zdrMinAdvance)} zdravotní · průměrná mzda ${fmt(P.avgWage)} · minimální mzda ${fmt(P.minWage)} · 23% sazba daně od základu ${fmt(P.taxThreshold)}.`;
+}
+
+const YEAR_TEXT = {
+  2026: {
+    hint: "Běžící rok — přiznání a přehledy podáte na jaře 2027.",
+    assump: "Parametry roku 2026 po novele účinné zpětně od ledna.",
+    notice: "<b>Rok 2026:</b> záloha v I. pásmu se novelou od července zpětně snížila z 9 984 Kč na <b>9 162 Kč</b>. Kdo za leden–červen platil původní částku, má přeplatek <b>4 932 Kč</b> — lze o něj snížit některou z dalších měsíčních záloh, jinak o něj žádáte až po konci roku."
+  },
+  2027: {
+    hint: "Příští rok — vstup do paušálního režimu či změnu pásma oznamte do 11. ledna 2027.",
+    assump: "Parametry roku 2027: průměrná mzda 51 663 Kč, minimální mzda 24 900 Kč; slevy, sazby a limity odpočtů beze změny.",
+    notice: "<b>Rok 2027:</b> záloha v I. pásmu roste z 9 162 Kč na <b>9 662 Kč</b> (100 Kč daň + 6 074 Kč důchodové + 3 488 Kč zdravotní pojištění), II. a III. pásmo se nemění. Částka je dopočtena podle zákona z průměrné mzdy 51 663 Kč — před první platbou ji ověřte na webu Finanční správy. Od ledna 2027 se vrací evidence tržeb u hotovostních plateb; v I. pásmu se z ní lze vyvázat přirážkou <b>1 400 Kč</b> měsíčně, se kterou tu nepočítáme."
+  }
+};
+
+function setYear(year) {
+  if (!YEARS[year]) return;
+  P = buildParams(+year);
+  document.querySelectorAll('input[name="taxYear"]').forEach(r => { r.checked = +r.value === P.year; });
+  render();
+}
+
 const inputs = ["income", "children", "realExp", "spouse", "mortgage", "pension"];
 
 /* ---------- přepínač ročně / měsíčně ---------- */
@@ -586,6 +646,12 @@ function render() {
   const ctx = computeAll();
   const { incomeAnnual, raw, profiles, realItem, best, runner, save, lost } = ctx;
 
+  const yt = YEAR_TEXT[P.year];
+  $("yearLbl").textContent = P.year;
+  $("yearHint").textContent = yt.hint;
+  $("assumpYear").textContent = yt.assump;
+  $("footParams").textContent = paramsLine();
+
   $("incomeVal").textContent = fmt(raw) + (incomeMode === "year" ? " / rok" : " / měsíc");
   $("incomeAlt").textContent = incomeMode === "year"
     ? `≈ ${fmt(Math.round(raw / 12))} / měsíc`
@@ -626,10 +692,12 @@ function render() {
       <tr><td>Náklad zaměstnavatele (hrubá + 33,8 % odvodů)</td><td>${fmt(h.employerMonth)} / měs. · ${fmt(h.employerYear)} / rok</td></tr>
       <tr><td>Srovnání s roční fakturací ${fmt(incomeAnnual)}</td><td>${hppDiffText(h, incomeAnnual)}</td></tr>
     </table>
-    ${h.clamped ? `<div class="note"><b>Pozn.:</b> vypočtený ekvivalent vychází pod minimální mzdou ${fmt(EMP.minWageMonth)} / měs., na kterou má zaměstnanec na plný úvazek nárok vždy — uvedena je proto minimální mzda. Čistá mzda by pak byla ≈ ${fmt(h.netAtGross / 12)} / měs., tedy víc než čistý příjem OSVČ.</div>` : ""}
+    ${h.clamped ? `<div class="note"><b>Pozn.:</b> vypočtený ekvivalent vychází pod minimální mzdou ${fmt(P.minWage)} / měs., na kterou má zaměstnanec na plný úvazek nárok vždy — uvedena je proto minimální mzda. Čistá mzda by pak byla ≈ ${fmt(h.netAtGross / 12)} / měs., tedy víc než čistý příjem OSVČ.</div>` : ""}
+    ${h.overCap ? `<div class="note"><b>Pozn.:</b> roční hrubá mzda přesahuje maximální vyměřovací základ ${fmt(P.socMaxYear)} — z částky nad ním se sociální pojistné (7,1 % ani 24,8 %) neplatí, náklad zaměstnavatele je proto nižší než hrubá + 33,8 %.</div>` : ""}
     <div class="note">Zaměstnanec: 7,1 % sociální + 4,5 % zdravotní, stejné slevy a odpočty jako výše. Zaměstnavatel: 24,8 % + 9 %. Nezohledňuje benefity, stravenky, dovolenou ani nemocenskou — reálná hodnota HPP je tedy o něco vyšší, než ukazuje samotná čistá mzda.</div>`;
 
-  $("julyNotice").hidden = !profiles.some(p => p.pausal.pasmo === 1);
+  $("yearNotice").innerHTML = yt.notice;
+  $("yearNotice").hidden = !profiles.some(p => p.pausal.pasmo === 1);
 }
 
 function esc(s) {
@@ -669,7 +737,7 @@ function buildReportHTML(ctx) {
   const lostHtml = lost.map(([t, a]) => `<li><span>${esc(t)}</span><b>${esc(a)}</b></li>`).join("");
 
   return `<!doctype html><html lang="cs"><head><meta charset="utf-8">
-<title>Přehled OSVČ 2026 — paušální daň vs. výdajový paušál</title>
+<title>Přehled OSVČ ${P.year} — paušální daň vs. výdajový paušál</title>
 <style>
 body{font-family:Georgia,"Times New Roman",serif;color:#141414;background:#fff;max-width:720px;margin:32px auto;padding:0 20px 40px;line-height:1.5}
 h1{font-size:24px;margin:0 0 4px}
@@ -699,7 +767,7 @@ button{background:#00BFE8;color:#141414;border:1.5px solid #141414;border-radius
 </style></head>
 <body>
 <h1>Paušální daň, nebo výdajový paušál?</h1>
-<div class="meta">Přehled vygenerován ${esc(dateStr)} · příjem ${esc(fmt(incomeAnnual))} / rok · parametry 2026 po červencové novele</div>
+<div class="meta">Přehled vygenerován ${esc(dateStr)} · příjem ${esc(fmt(incomeAnnual))} / rok · parametry roku ${P.year}</div>
 
 <div class="verdict">
   <b>Nejvýhodnější:</b> ${esc(best.name)}${runner ? ` — ušetříte ${esc(fmt(save))} ročně oproti ${esc(runner.name.toLowerCase())}` : ""}.<br>
@@ -722,8 +790,7 @@ ${profilesHtml}
 <div class="actions"><button onclick="window.print()">Vytisknout / Uložit jako PDF</button></div>
 
 <footer>
-  Orientační výpočet, nejde o daňové poradenství. Parametry 2026: paušální daň 9 162 / 16 745 / 27 139 Kč měsíčně,
-  min. zálohy 5 005 Kč sociální + 3 306 Kč zdravotní, průměrná mzda 48 967 Kč.
+  Orientační výpočet, nejde o daňové poradenství. ${esc(paramsLine())}
 </footer>
 
 <script>window.addEventListener("load", () => setTimeout(() => window.print(), 300));<\/script>
@@ -732,6 +799,7 @@ ${profilesHtml}
 
 inputs.forEach(id => $(id).addEventListener("input", render));
 document.querySelectorAll('input[name="incomeMode"]').forEach(r => r.addEventListener("change", e => setMode(e.target.value)));
+document.querySelectorAll('input[name="taxYear"]').forEach(r => r.addEventListener("change", e => setYear(e.target.value)));
 
 $("printBtn").addEventListener("click", () => {
   const html = buildReportHTML(computeAll());
@@ -739,7 +807,7 @@ $("printBtn").addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "prehled-osvc-2026.html";
+  a.download = `prehled-osvc-${P.year}.html`;
   document.body.appendChild(a);
   a.click();
   a.remove();
